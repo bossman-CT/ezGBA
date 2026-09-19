@@ -204,8 +204,9 @@ impl Gestures {
             }
             Btn::Lid => vec![Action::LidClose],
             Btn::VolUp | Btn::VolDown => self.volume_press(b, now),
-            Btn::L2 => self.rewind_start(),
-            Btn::R2 => self.ff_down(now),
+            // Disabled: L2/R2 sit beside L1/R1, which GBA games use constantly, and
+            // rewind/fast-forward fired on contact. No GBA game receives them (mask.rs).
+            Btn::L2 | Btn::R2 => Vec::new(),
             _ => {
                 let chording = matches!(self.select, Select::Pending(_) | Select::Consumed);
                 if let (true, Some((bit, action))) = (chording, chord(b)) {
@@ -225,8 +226,8 @@ impl Gestures {
             Btn::Power => self.power_up(),
             Btn::Lid => vec![Action::LidOpen],
             Btn::VolUp | Btn::VolDown => self.volume_release(b),
-            Btn::L2 => self.rewind_stop(),
-            Btn::R2 => self.ff_up(now),
+            // Disabled: see down().
+            Btn::L2 | Btn::R2 => Vec::new(),
             _ => {
                 if let Some((bit, _)) = chord(b) {
                     if self.chord_held & bit != 0 {
@@ -353,6 +354,7 @@ impl Gestures {
         Vec::new()
     }
 
+    #[allow(dead_code)] // unreachable: L2/R2 disabled in down()/up()
     fn rewind_start(&mut self) -> Vec<Action> {
         if self.rewinding {
             return Vec::new();
@@ -364,6 +366,7 @@ impl Gestures {
         out
     }
 
+    #[allow(dead_code)] // unreachable: L2/R2 disabled in down()/up()
     fn rewind_stop(&mut self) -> Vec<Action> {
         if !self.rewinding {
             return Vec::new();
@@ -372,6 +375,7 @@ impl Gestures {
         vec![Action::RewindStop]
     }
 
+    #[allow(dead_code)] // unreachable: L2/R2 disabled in down()/up()
     fn ff_down(&mut self, now: Millis) -> Vec<Action> {
         if self.rewinding {
             return Vec::new();
@@ -393,6 +397,7 @@ impl Gestures {
         vec![Action::FfStart]
     }
 
+    #[allow(dead_code)] // unreachable: L2/R2 disabled in down()/up()
     fn ff_up(&mut self, now: Millis) -> Vec<Action> {
         self.r2_last_release = Some(now);
         if self.ff_latching_press {
@@ -402,6 +407,7 @@ impl Gestures {
         self.ff_clear()
     }
 
+    #[allow(dead_code)] // unreachable: L2/R2 disabled in down()/up()
     fn ff_clear(&mut self) -> Vec<Action> {
         self.ff_latched = false;
         self.ff_latching_press = false;

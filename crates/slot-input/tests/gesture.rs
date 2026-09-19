@@ -90,21 +90,20 @@ fn menu_hold_released_early_ejects_nothing() {
 }
 
 #[test]
-fn r2_hold_is_momentary() {
+fn l2_and_r2_do_nothing() {
     let mut g = Gestures::new();
-    assert_eq!(g.feed(Down(R2), 0), vec![FfStart]);
-    assert_eq!(g.feed(Up(R2), 900), vec![FfStop]);
-}
-
-#[test]
-fn r2_double_tap_latches_and_single_press_clears() {
-    let mut g = Gestures::new();
-    g.feed(Down(R2), 0);
-    g.feed(Up(R2), 50); // tap 1
-    g.feed(Down(R2), 100);
-    assert!(g.feed(Up(R2), 150).is_empty()); // latched, FF stays on
-    g.feed(Down(R2), 5000);
-    assert_eq!(g.feed(Up(R2), 5050), vec![FfStop]);
+    // The triggers must be inert in both directions. They also reach no GBA button:
+    // mask.rs maps neither, so a dropped event costs the game nothing.
+    assert!(g.feed(Down(L2), 0).is_empty());
+    assert!(g.feed(Up(L2), 900).is_empty());
+    assert!(g.feed(Down(R2), 1000).is_empty());
+    assert!(g.feed(Up(R2), 1050).is_empty());
+    // And a double tap must not latch fast forward on.
+    assert!(g.feed(Down(R2), 2000).is_empty());
+    assert!(g.feed(Up(R2), 2050).is_empty());
+    assert!(g.feed(Down(R2), 2100).is_empty());
+    assert!(g.feed(Up(R2), 2150).is_empty());
+    assert!(!g.ff_latched(), "a double tap latched fast forward");
 }
 
 /// The flush hangs off the press, because a button being held may be cut by the PMIC before
@@ -136,16 +135,6 @@ fn a_press_just_short_of_the_threshold_is_a_lock() {
     g.feed(Down(Btn::Power), 0);
     assert!(g.tick(POWER_HOLD_MS - 1).is_empty());
     assert_eq!(g.feed(Up(Btn::Power), POWER_HOLD_MS - 1), vec![PowerTap]);
-}
-
-#[test]
-fn rewind_beats_latched_fast_forward() {
-    let mut g = Gestures::new();
-    g.feed(Down(R2), 0);
-    g.feed(Up(R2), 50);
-    g.feed(Down(R2), 100);
-    g.feed(Up(R2), 150); // latched
-    assert_eq!(g.feed(Down(L2), 200), vec![FfStop, RewindStart]);
 }
 
 /// 120 ms was not enough time to land the second key of a chord, so SELECT reached the game
