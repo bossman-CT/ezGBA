@@ -41,6 +41,10 @@ jobs:
       - name: Install zip, cmake and Task
         run: |
           set -eu
+          # Bullseye's live mirror has since garbage-collected old package files
+          # (libarchive13 404s as of Sep 2026) on top of the expired-signature issue
+          # noted above. archive.debian.org keeps EOL package files indefinitely.
+          sed -i 's/deb\.debian\.org/archive.debian.org/g' /etc/apt/sources.list
           apt-get -o Acquire::Check-Valid-Until=false update
           apt-get install -y --no-install-recommends zip cmake
           curl -fsSL https://taskfile.dev/install.sh | sh -s -- -b /usr/local/bin
