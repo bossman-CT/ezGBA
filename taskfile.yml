@@ -239,7 +239,12 @@ tasks:
           "https://github.com/libretro/gpsp/archive/{{.GPSP_COMMIT}}.tar.gz"
         # A real gpSP checkout, not just a valid tarball: same shape as any GitHub source
         # archive, one top directory named for the commit, and the Makefile lives in it.
-        tar -tzf vendor/gpsp-src.tar.gz | grep -q "^gpsp-{{.GPSP_COMMIT}}/Makefile$"
+        # Captured via command substitution rather than a live pipe: grep -q can
+        # exit the instant it matches, and on a large listing that SIGPIPEs tar
+        # while it is still writing, which set -o pipefail then treats as failure
+        # even though the check itself passed.
+        gpsp_listing="$(tar -tzf vendor/gpsp-src.tar.gz)"
+        printf "%s\n" "$gpsp_listing" | grep -q "^gpsp-{{.GPSP_COMMIT}}/Makefile$"
       # Built from exactly that archive, in the box the device build uses, so the core links
       # against the same glibc 2.31 as slot. cores/gpsp/build.sh has the recipe and the flags.
       - task: device:sh
