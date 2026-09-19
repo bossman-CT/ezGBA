@@ -85,7 +85,7 @@ fn menu_hold_ejects_at_the_hold_time_and_not_before() {
 fn menu_hold_released_early_ejects_nothing() {
     let mut g = Gestures::new();
     g.feed(Down(Menu), 0);
-    g.feed(Up(Menu), MENU_HOLD_MS - 200);
+    g.feed(Up(Menu), MENU_HOLD_MS / 2);
     assert!(g.tick(3000).is_empty());
 }
 

@@ -10,7 +10,13 @@ pub const SELECT_CHORD_MS: Millis = 600;
 pub const SELECT_TAP_MS: Millis = 50;
 pub const MENU_TAP_MS: Millis = 250;
 pub const MENU_DOUBLE_TAP_MS: Millis = 350;
-pub const MENU_HOLD_MS: Millis = 1000;
+/// Deliberately near-instant: a save-and-eject that costs nothing (the state is what
+/// gets you back in) has no real "accidental" case worth guarding against, so there is
+/// no reason to make a kid hold this down. What used to be a 1 s hold left presses of
+/// 250-999 ms doing nothing at all -- long enough to miss the old tap window, short of
+/// the old hold -- which read as a dead button. 40 ms clears normal human debounce
+/// while being far under anything a deliberate press releases inside.
+pub const MENU_HOLD_MS: Millis = 40;
 pub const FF_DOUBLE_TAP_MS: Millis = 250;
 /// How far apart the two volume keys may go down and still read as one gesture. Short,
 /// because neither key is deferred waiting for it: the pair is recognised behind the presses
