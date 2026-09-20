@@ -368,11 +368,11 @@ impl Shelf {
             // The floor is this platform's, asked of the cartridge's own full height rather than
             // of the scaled one: a neighbour shrinks upward off a floor it shares with the
             // selection instead of shrinking about its own middle.
-            // Only the idle shelf ever passes a nonzero offset: it is the one screen
-            // with a full-height backdrop behind a full row, and the two competed for
-            // the same middle of the screen. Every other caller leaves this at 0.0, so
-            // the insert/eject travel and the core picker keep the geometry they always
-            // had.
+            // Every caller now passes the same lowered offset, so the row sits at one
+            // consistent height across the shelf, the core picker and the insert/eject
+            // travel. A caller-specific offset here read as a snap the instant the phase
+            // changed - the row jumping back to its old centred rest for one frame of an
+            // eject before landing back on the lowered one.
             let y = foot_y(ch as f32) - h + y_offset;
             // Black in the cart's own shape, under the dimmed face. Without it the dimming is
             // transparency, and over a wallpaper the row reads as ghosts of carts.
