@@ -5,11 +5,13 @@ use slot_gfx::{Draw, TexId, OUT_H, OUT_W};
 use crate::art;
 use crate::slot_chrome::scrim;
 
-/// How much of the picture is taken back out again. The shelf is dark carts on a dark ground
-/// and the case is printed in one flat tone: over a photograph at full strength neither
-/// reads, and `slot-ui/tests/contrast.rs` is about the ground being predictable. A wallpaper
-/// is atmosphere behind the shelf, not the shelf's background.
-const SCRIM: f32 = 0.62;
+/// How much of the picture is taken back out again. 0.62 was tuned for a full-height
+/// row sitting directly on top of the picture, needing heavy contrast to read over it;
+/// the row now stands in its own clear band below the picture (see SHELF_ROW_LOWER in
+/// app.rs) with nothing drawn over the artwork itself, so that much dimming only muted
+/// a picture nothing was competing with. Kept low rather than at 0.0 so the theme's own
+/// scrim colour still ties the picture into the rest of the card's palette.
+const SCRIM: f32 = 0.18;
 
 /// Cover the whole panel, centre cropped. PNG only, as the labels are.
 pub fn wallpaper_face(path: &Path) -> Option<Vec<u8>> {
