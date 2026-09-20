@@ -6,7 +6,7 @@ A fork of [slot.](https://github.com/BrandonKowalski/slot) built for exactly one
 handheld a young kid — pre-reader, unsupervised, first console — can pick up and use with
 zero adult explanation required. Every button does one obvious thing, by itself, every time.
 
-Built on the Anbernic RG SP (~$65), for two real kids, both under 10.
+Built on the Anbernic RG SP (~$65), for two real kids, both under 10 - and now yours too.
 
 ## Why this exists
 
