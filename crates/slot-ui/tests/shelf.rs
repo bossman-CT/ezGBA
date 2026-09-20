@@ -23,7 +23,7 @@ fn shelf_with(n: usize) -> Shelf {
 
 fn placed(s: &Shelf) -> Vec<(f32, f32)> {
     let mut out = Vec::new();
-    s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+    s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
     out.iter()
         .map(|d| match *d {
             Draw::Rect { x, w, .. } => (x, w),
@@ -141,7 +141,7 @@ fn no_cart_is_drawn_twice_in_a_row_of_three_or_more() {
     for n in [3usize, 4, 7] {
         let s = shelf_with(n);
         let mut out = Vec::new();
-        s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+        s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
         let drawn = drawn_cart_indices(&out);
         let mut uniq = drawn.clone();
         uniq.sort();
@@ -178,7 +178,7 @@ fn two_carts_repeat_around_the_ring() {
     let mut s = shelf_with(2);
     settle(&mut s);
     let mut out = Vec::new();
-    s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+    s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
     assert_eq!(
         drawn_cart_indices(&out),
         vec![1, 0, 1],
@@ -217,7 +217,7 @@ fn a_press_on_a_row_of_two_slides_the_row_rather_than_swapping_its_carts() {
     // two sides of a press can be compared as sets of positions.
     let occupied = |s: &Shelf| {
         let mut out = Vec::new();
-        s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+        s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
         let which = drawn_cart_indices(&out);
         let mut row: Vec<(i64, usize)> = out
             .iter()
@@ -616,7 +616,7 @@ fn a_refusal_moves_the_carts_and_leaves_the_device_where_it_is() {
     // The row draws first, so its quads are the leading ones. Sizes cannot tell the two
     // apart: the carts either side of the selection are drawn scaled down.
     let mut row = Vec::new();
-    s.draw_row(None, 0.0, 0.0, 1.0, &mut row);
+    s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut row);
     let carts = row.len();
     assert!(
         carts > 0 && carts < still.len(),
@@ -707,7 +707,7 @@ fn the_row_parts_for_the_cart_going_in() {
     let s = shelf_with(5);
     let at = |recede: f32| {
         let mut out = Vec::new();
-        s.draw_row(Some("Game 0"), 0.0, recede, 1.0, &mut out);
+        s.draw_row(Some("Game 0"), 0.0, recede, 1.0, 0.0, &mut out);
         out
     };
     let start = at(0.0);
@@ -742,7 +742,7 @@ fn dim_darkens_a_side_carts_face_and_not_the_black_under_it() {
     s.set_faces(vec![TexId::from_raw(10), side, TexId::from_raw(12)]);
     let drawn = |dim: f32| {
         let mut out = Vec::new();
-        s.draw_row(Some("Game 0"), 0.0, 0.3, dim, &mut out);
+        s.draw_row(Some("Game 0"), 0.0, 0.3, dim, 0.0, &mut out);
         let (x, face) = out
             .iter()
             .find_map(|d| match *d {
@@ -799,7 +799,7 @@ fn the_row_draws_a_game_boy_pak_at_its_own_height() {
     settle(&mut s);
     s.set_faces((0..3).map(|i| TexId::from_raw(20 + i)).collect());
     let mut out = Vec::new();
-    s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+    s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
     let (h, y) = out
         .iter()
         .find_map(|d| match *d {
@@ -827,7 +827,7 @@ fn a_game_boy_row_backs_its_carts_with_the_game_boy_shadow() {
     s.set_shadow(gba);
     let drawn = |s: &Shelf| {
         let mut out = Vec::new();
-        s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+        s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
         out
     };
     assert!(
@@ -892,7 +892,7 @@ fn a_colour_pak_and_a_grey_one_are_backed_by_their_own_shells() {
         s.set_gb_shadow(GbShell::Notched, notched);
         s.set_gb_shadow(GbShell::Rounded, rounded);
         let mut out = Vec::new();
-        s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+        s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
         let backings: Vec<TexId> = out
             .iter()
             .filter_map(|d| match *d {
@@ -933,7 +933,7 @@ fn a_cart_pushed_onto_the_row_draws_rather_than_stopping_the_device() {
     settle(&mut s);
     let backed = |s: &Shelf| {
         let mut out = Vec::new();
-        s.draw_row(None, 0.0, 0.0, 1.0, &mut out);
+        s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut out);
         out.iter()
             .filter(|d| matches!(**d, Draw::Tex { tex, .. } if tex == gb || tex == gba))
             .count()

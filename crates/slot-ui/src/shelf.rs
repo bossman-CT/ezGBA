@@ -309,8 +309,8 @@ impl Shelf {
 
     /// The shelf screen: the row of carts and the slot under it. What is printed on the case
     /// is drawn after this, by whoever holds the type.
-    pub fn draw(&self, shake: f32, out: &mut Vec<Draw>) {
-        self.draw_row(None, shake, 0.0, 1.0, out);
+    pub fn draw(&self, shake: f32, y_offset: f32, out: &mut Vec<Draw>) {
+        self.draw_row(None, shake, 0.0, 1.0, y_offset, out);
         draw_empty_slot(out);
     }
 
@@ -335,6 +335,7 @@ impl Shelf {
         shake: f32,
         recede: f32,
         dim: f32,
+        y_offset: f32,
         out: &mut Vec<Draw>,
     ) {
         let recede = recede.clamp(0.0, 1.0);
@@ -367,7 +368,12 @@ impl Shelf {
             // The floor is this platform's, asked of the cartridge's own full height rather than
             // of the scaled one: a neighbour shrinks upward off a floor it shares with the
             // selection instead of shrinking about its own middle.
-            let y = foot_y(ch as f32) - h;
+            // Only the idle shelf ever passes a nonzero offset: it is the one screen
+            // with a full-height backdrop behind a full row, and the two competed for
+            // the same middle of the screen. Every other caller leaves this at 0.0, so
+            // the insert/eject travel and the core picker keep the geometry they always
+            // had.
+            let y = foot_y(ch as f32) - h + y_offset;
             // Black in the cart's own shape, under the dimmed face. Without it the dimming is
             // transparency, and over a wallpaper the row reads as ghosts of carts.
             if alpha < 1.0 {

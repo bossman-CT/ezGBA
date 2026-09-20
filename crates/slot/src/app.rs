@@ -130,6 +130,13 @@ const LID_SHADOW_W: f32 = 168.0;
 const LID_SHADOW_H: f32 = 18.0;
 const LID_SHADOW_DROP: f32 = 29.0;
 const LID_SHADOW_ALPHA: f32 = 0.8;
+
+/// How far the idle shelf's row is pushed down from its old dead-centre rest position.
+/// A full-height backdrop and a full-height row used to share the same middle of the
+/// screen, which put the row directly over whatever a box art backdrop shows there -
+/// usually its own title. Chosen to clear the footer band (MOUTH_H, 58px) by a small
+/// margin rather than to hit it exactly, so nothing reads as cut off.
+const SHELF_ROW_LOWER: f32 = 100.0;
 /// The longest the cart stands on the shelf waiting for its faces before it opens anyway, so a
 /// face that never comes cannot freeze the picker. A fast scroll can leave the worker still
 /// finishing the cart it was already building before it starts on this one, so the cap has to
@@ -2388,10 +2395,12 @@ impl App {
                         // with the lid coming off and leaves with it going back on.
                         let dim = 1.0 + (CORE_PICKER_DIM - 1.0) * open;
                         self.shelf()
-                            .draw_row(Some(stem), 0.0, CORE_PICKER_RECEDE * open, dim, out);
+                            .draw_row(Some(stem), 0.0, CORE_PICKER_RECEDE * open, dim, 0.0, out);
                         draw_empty_slot(out);
                     }
-                    _ => self.shelf().draw(self.shelf_shake(), out),
+                    // Lowered so the backdrop's upper portion - usually where a box
+                    // art's title sits - is not the part the row sits directly over.
+                    _ => self.shelf().draw(self.shelf_shake(), SHELF_ROW_LOWER, out),
                 }
                 draw_footer(
                     self.battery,
@@ -2416,7 +2425,7 @@ impl App {
                 if !resumed {
                     draw_backdrop(self.current_backdrop().or(self.wallpaper), out);
                     self.shelf()
-                        .draw_row(Some(cart), 0.0, self.seat(), 1.0, out);
+                        .draw_row(Some(cart), 0.0, self.seat(), 1.0, 0.0, out);
                 }
                 self.chrome(cart, self.seat(), out);
             }
@@ -2427,7 +2436,7 @@ impl App {
             Phase::Ejecting { cart, .. } => {
                 draw_backdrop(self.current_backdrop().or(self.wallpaper), out);
                 self.shelf()
-                    .draw_row(Some(cart), 0.0, self.seat(), 1.0, out);
+                    .draw_row(Some(cart), 0.0, self.seat(), 1.0, 0.0, out);
                 self.chrome(cart, self.seat(), out);
             }
             // The slot stays on screen until the picture behind it has finished arriving,

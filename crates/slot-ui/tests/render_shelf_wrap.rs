@@ -47,7 +47,7 @@ fn frame(s: &Shelf) -> Vec<u8> {
         p.copy_from_slice(&[18, 18, 22]);
     }
     let mut list = Vec::new();
-    s.draw_row(None, 0.0, 0.0, 1.0, &mut list);
+    s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut list);
     for d in &list {
         let Draw::Rect { x, y, w, h, colour } = *d else {
             continue;
@@ -166,7 +166,7 @@ fn double_tap(n: usize, start: usize, way: i32, gap: usize, frames: usize) -> Ru
 /// is a separate thing to look at from which way the row went.
 fn widest_gap(s: &Shelf) -> (f32, f32) {
     let mut list = Vec::new();
-    s.draw_row(None, 0.0, 0.0, 1.0, &mut list);
+    s.draw_row(None, 0.0, 0.0, 1.0, 0.0, &mut list);
     let (mut left, mut right) = (OUT_W as f32, OUT_W as f32);
     for d in &list {
         if let Draw::Rect { x, w, .. } = *d {
