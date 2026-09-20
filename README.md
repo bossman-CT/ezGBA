@@ -3,7 +3,7 @@
 **No hotkeys. No combos. No menus to get lost in. Simple, simple, simple.**
 
 A fork of [slot.](https://github.com/BrandonKowalski/slot) built for exactly one job: a GBA
-handheld a young kid — pre-reader, unsupervised, first console — can pick up and use with
+handheld for a young kid — pre-reader, unsupervised, first console — can pick up and use with
 zero adult explanation required. Every button does one obvious thing, by itself, every time.
 
 Built on the Anbernic RG SP and built for kids or adults wanting a simple seamless GBA experience.
