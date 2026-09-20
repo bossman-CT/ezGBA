@@ -11,6 +11,7 @@ fn the_card_s_palette_is_what_reaches_the_screen() {
         recess: [0x44, 0x55, 0x66],
         opening: [0x77, 0x88, 0x99],
         edge: [0xaa, 0xbb, 0xcc],
+        scrim: [0x00, 0x00, 0x00],
     };
     set_theme(t);
     let hex = |c: [f32; 4]| {

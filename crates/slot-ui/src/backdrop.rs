@@ -3,6 +3,7 @@ use std::path::Path;
 use slot_gfx::{Draw, TexId, OUT_H, OUT_W};
 
 use crate::art;
+use crate::slot_chrome::scrim;
 
 /// How much of the picture is taken back out again. The shelf is dark carts on a dark ground
 /// and the case is printed in one flat tone: over a photograph at full strength neither
@@ -29,11 +30,12 @@ pub fn draw_backdrop(face: Option<TexId>, out: &mut Vec<Draw>) {
         tex,
         alpha: 1.0,
     });
+    let [r, g, b] = scrim();
     out.push(Draw::Rect {
         x: 0.0,
         y: 0.0,
         w: OUT_W as f32,
         h: OUT_H as f32,
-        colour: [0.0, 0.0, 0.0, SCRIM],
+        colour: [r, g, b, SCRIM],
     });
 }

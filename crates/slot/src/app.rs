@@ -1067,6 +1067,23 @@ impl App {
         }
     }
 
+    /// Same distribution as `set_faces`: one flat list, in `carts` order, handed back out
+    /// one slice per shelf.
+    pub fn set_backdrops(&mut self, backdrops: Vec<Option<TexId>>) {
+        let mut backdrops = backdrops.into_iter();
+        for (_, shelf) in &mut self.shelves {
+            let n = shelf.carts.len();
+            shelf.set_backdrops(backdrops.by_ref().take(n).collect());
+        }
+    }
+
+    /// The backdrop for whichever cart the active shelf has selected, if it has one of its
+    /// own. `None` falls back to the ordinary random wallpaper, which is what a shelf with
+    /// no shelves at all (an empty card) also gets.
+    pub fn current_backdrop(&self) -> Option<TexId> {
+        self.shelves.get(self.shelf_at)?.1.current_backdrop()
+    }
+
     /// Handed over when the core is spawned, which is on the way into the slot.
     pub fn set_snapshot(&mut self, snapshot: Box<dyn Snapshot>) {
         self.snapshot = Some(snapshot);
@@ -2358,7 +2375,7 @@ impl App {
             }
             .draw(out),
             Phase::Shelf => {
-                draw_backdrop(self.wallpaper, out);
+                draw_backdrop(self.current_backdrop().or(self.wallpaper), out);
                 match (self.core_picker_shown(), self.selected_stem()) {
                     // The highlighted cart is the picker's to draw while its lid is off, and the
                     // rest of the row makes way for it the way it does for a cart going in.
@@ -2397,7 +2414,7 @@ impl App {
             Phase::Inserting { cart, resumed, .. } => {
                 // Spec section 3: a resumed cart shows no shelf, not even one frame of it.
                 if !resumed {
-                    draw_backdrop(self.wallpaper, out);
+                    draw_backdrop(self.current_backdrop().or(self.wallpaper), out);
                     self.shelf()
                         .draw_row(Some(cart), 0.0, self.seat(), 1.0, out);
                 }
@@ -2408,7 +2425,7 @@ impl App {
             // other way. Darkening on the way out as well as on the way in was the screen
             // playing the same movement twice rather than reversing it.
             Phase::Ejecting { cart, .. } => {
-                draw_backdrop(self.wallpaper, out);
+                draw_backdrop(self.current_backdrop().or(self.wallpaper), out);
                 self.shelf()
                     .draw_row(Some(cart), 0.0, self.seat(), 1.0, out);
                 self.chrome(cart, self.seat(), out);

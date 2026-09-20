@@ -14,6 +14,10 @@ pub struct Cart {
     pub stem: String,
     pub rom: PathBuf,
     pub label: Option<PathBuf>,
+    /// A full-panel picture for this cart, shown behind the shelf while it is selected.
+    /// Same lookup as `label` but under `Backdrops`, and just as optional: most carts
+    /// will not have one, and the shelf falls back to its ordinary random wallpaper.
+    pub backdrop: Option<PathBuf>,
     pub title: String,
     /// The four character header game code, empty when the rom has none. A Game Boy cart has
     /// no equivalent field, so this is always empty for `Platform::Gb` and `Platform::Gbc`.
@@ -67,6 +71,10 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
                 .join("Labels")
                 .join(platform.dir_name())
                 .join(format!("{stem}.png"));
+            let backdrop = root
+                .join("Backdrops")
+                .join(platform.dir_name())
+                .join(format!("{stem}.png"));
             let (title, code) = match platform {
                 Platform::Gba => (
                     header_title(&rom).unwrap_or_default(),
@@ -83,6 +91,7 @@ pub fn scan(root: &Path) -> Result<Vec<Cart>, StoreError> {
                 title,
                 code,
                 label: label.is_file().then_some(label),
+                backdrop: backdrop.is_file().then_some(backdrop),
                 rom,
             });
         }

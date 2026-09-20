@@ -90,20 +90,17 @@ fn menu_hold_released_early_ejects_nothing() {
 }
 
 #[test]
-fn l2_and_r2_do_nothing() {
+fn l2_dims_and_r2_brightens_one_step_per_press() {
     let mut g = Gestures::new();
-    // The triggers must be inert in both directions. They also reach no GBA button:
-    // mask.rs maps neither, so a dropped event costs the game nothing.
-    assert!(g.feed(Down(L2), 0).is_empty());
-    assert!(g.feed(Up(L2), 900).is_empty());
-    assert!(g.feed(Down(R2), 1000).is_empty());
+    // One shot on the press, same as the chord-driven brightness keys: nothing on
+    // release, and neither reaches the game either way (mask.rs maps neither button).
+    assert_eq!(g.feed(Down(L2), 0), vec![BrightnessDown]);
+    assert!(g.feed(Up(L2), 50).is_empty());
+    assert_eq!(g.feed(Down(R2), 1000), vec![BrightnessUp]);
     assert!(g.feed(Up(R2), 1050).is_empty());
-    // And a double tap must not latch fast forward on.
-    assert!(g.feed(Down(R2), 2000).is_empty());
+    // Repeated presses step again each time, exactly like mashing the chord would.
+    assert_eq!(g.feed(Down(R2), 2000), vec![BrightnessUp]);
     assert!(g.feed(Up(R2), 2050).is_empty());
-    assert!(g.feed(Down(R2), 2100).is_empty());
-    assert!(g.feed(Up(R2), 2150).is_empty());
-    assert!(!g.ff_latched(), "a double tap latched fast forward");
 }
 
 /// The flush hangs off the press, because a button being held may be cut by the PMIC before

@@ -210,9 +210,14 @@ impl Gestures {
             }
             Btn::Lid => vec![Action::LidClose],
             Btn::VolUp | Btn::VolDown => self.volume_press(b, now),
-            // Disabled: L2/R2 sit beside L1/R1, which GBA games use constantly, and
-            // rewind/fast-forward fired on contact. No GBA game receives them (mask.rs).
-            Btn::L2 | Btn::R2 => Vec::new(),
+            // L2/R2 sit beside L1/R1, which GBA games use constantly, and rewind/
+            // fast-forward used to fire on contact there with no hold threshold at all.
+            // No GBA game receives either button (mask.rs), so both are free for the
+            // frontend's own use: one press, one step, the same way the SELECT+Up/Down
+            // chord already changes brightness, just with no chord to find first.
+            // L2 dims, R2 brightens.
+            Btn::L2 => vec![Action::BrightnessDown],
+            Btn::R2 => vec![Action::BrightnessUp],
             _ => {
                 let chording = matches!(self.select, Select::Pending(_) | Select::Consumed);
                 if let (true, Some((bit, action))) = (chording, chord(b)) {
@@ -232,7 +237,8 @@ impl Gestures {
             Btn::Power => self.power_up(),
             Btn::Lid => vec![Action::LidOpen],
             Btn::VolUp | Btn::VolDown => self.volume_release(b),
-            // Disabled: see down().
+            // One-shot on the press, same as the chord buttons: nothing happens on
+            // release either way.
             Btn::L2 | Btn::R2 => Vec::new(),
             _ => {
                 if let Some((bit, _)) = chord(b) {

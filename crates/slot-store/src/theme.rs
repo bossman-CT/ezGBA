@@ -22,6 +22,9 @@ pub struct Theme {
     pub opening: [u8; 3],
     /// The lit edge of the plastic: the top of the slot and the rim of the scoop.
     pub edge: [u8; 3],
+    /// The tint behind the shelf, under the wallpaper's fixed opacity. Black by default,
+    /// matching what every card had before this existed.
+    pub scrim: [u8; 3],
 }
 
 impl Default for Theme {
@@ -31,6 +34,7 @@ impl Default for Theme {
             recess: [0x1a, 0x1a, 0x1d],
             opening: [0x05, 0x05, 0x08],
             edge: [0x4d, 0x4d, 0x57],
+            scrim: [0x00, 0x00, 0x00],
         }
     }
 }
@@ -68,6 +72,7 @@ impl Theme {
                 "recess" => theme.recess = rgb,
                 "opening" => theme.opening = rgb,
                 "edge" => theme.edge = rgb,
+                "scrim" => theme.scrim = rgb,
                 _ => {}
             }
         }

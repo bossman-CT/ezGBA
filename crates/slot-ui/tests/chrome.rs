@@ -14,6 +14,7 @@ fn cart() -> Cart {
         stem: "Emerald".into(),
         rom: "Games/GBA/Emerald.gba".into(),
         label: None,
+        backdrop: None,
         code: String::new(),
         title: "POKEMON EMER".into(),
     }
@@ -28,6 +29,7 @@ fn pak() -> Cart {
         stem: "Tetris".into(),
         rom: "Games/GB/Tetris.gb".into(),
         label: None,
+        backdrop: None,
         code: String::new(),
         title: "TETRIS".into(),
     }

@@ -154,6 +154,7 @@ impl Frontend {
             })
             .collect();
         self.session.app_mut().set_faces(faces);
+        self.upload_backdrops(compositor);
         let icons = Icon::ALL
             .iter()
             .map(|i| {
@@ -333,6 +334,23 @@ impl Frontend {
             .collect();
         self.session.app_mut().set_mark_faces(marks);
         self.upload_wallpaper(compositor);
+    }
+
+    /// One decode per cart with its own `Backdrops` picture, at boot alongside every other
+    /// face. A cart with no picture of its own, no readable one, or one the decoder will
+    /// not take gets `None` here and falls back to the random wallpaper at draw time -
+    /// exactly the fallback a card with no `Backdrops` folder at all gets for every cart.
+    fn upload_backdrops(&mut self, compositor: &mut Compositor) {
+        let backdrops = self
+            .session
+            .app()
+            .carts()
+            .map(|c| {
+                let rgba = wallpaper_face(c.backdrop.as_deref()?)?;
+                Some(compositor.create_texture(OUT_W, OUT_H, &rgba))
+            })
+            .collect();
+        self.session.app_mut().set_backdrops(backdrops);
     }
 
     /// One decode, at boot. A card with no `Wallpapers`, no readable picture in it, or a

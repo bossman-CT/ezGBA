@@ -80,6 +80,13 @@ pub fn housing() -> [f32; 4] {
     rgb(theme().housing)
 }
 
+/// Just the three channels: the scrim's own opacity is fixed elsewhere and does not
+/// belong to the theme, only the colour it tints towards does.
+pub fn scrim() -> [f32; 3] {
+    let c = theme().scrim;
+    [c[0] as f32 / 255.0, c[1] as f32 / 255.0, c[2] as f32 / 255.0]
+}
+
 pub fn opening() -> [f32; 4] {
     rgb(theme().opening)
 }
