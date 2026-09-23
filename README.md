@@ -37,9 +37,9 @@ exactly one obvious thing, on contact, with no combination required to discover 
   no hold threshold at all — genuinely easy for a small hand to trigger by accident mid-game.
   Here they're dead to the emulator (matching real GBA hardware, which never had them) and
   instead dim/brighten the screen, one press, one step.
-- **MENU ejects instantly.** Upstream requires roughly a 1-second hold, with a dead zone
-  between a quick tap and that threshold that does nothing at all. Since a lid-close auto-save
-  already protects progress, there's no reason to make a kid hold anything down.
+- **MENU ejects instantly.** One tap saves the game and pops the cart back onto the shelf.
+  Upstream needs MENU held for about a second, and a shorter press does nothing - which a
+  kid reads as "it's broken."
 - **The background shows the selected game**, not a random wallpaper. Scroll to Pokémon,
   see Pokémon's own box art fill the screen behind the shelf. Recognizing a game by its
   picture matters a lot when you can't read its title yet.
