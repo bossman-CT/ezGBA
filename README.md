@@ -24,8 +24,7 @@ Built on the Anbernic RG SP and built for kids or adults wanting a simple seamle
 
 Every retro-handheld guide out there assumes an adult reader who's comfortable with button
 chords, settings menus, and "hold X while pressing Y." That's a reasonable assumption for a
-hobbyist building their own device. It's a bad one for a Christmas gift going to a
-kid who can't read yet.
+hobbyist building their own device.
 
 slot. already got most of the way there — a minimalist shelf of cartridges, no clutter, no
 RetroArch menu to get lost in. ezGBA pushes the rest of the way: every remaining button does
