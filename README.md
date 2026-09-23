@@ -2,11 +2,8 @@
 
 **No hotkeys. No combos. No menus to get lost in. Simple, simple, simple.**
 
-A fork of [slot.](https://github.com/BrandonKowalski/slot) built for exactly one job: a GBA
-handheld for a young kid — pre-reader, unsupervised, first console — can pick up and use with
-zero adult explanation required. Every button does one obvious thing, by itself, every time.
-
-Built on the Anbernic RG SP and built for kids or adults wanting a simple seamless GBA experience.
+ezGBA turns an Anbernic RG SP into a Game Boy Advance that anyone can pick up and play.
+Made for kids, and for grown-ups who just want a simple GBA.
 
 <p align="center">
   <img src="media/shelf-advance-wars.png" width="45%" alt="The shelf: Advance Wars selected, its box art filling the screen above the carts">
@@ -18,53 +15,48 @@ Built on the Anbernic RG SP and built for kids or adults wanting a simple seamle
 | Pick a game, play, eject | Brightness on L2/R2 | Close the lid, pick up where you left off |
 |:---:|:---:|:---:|
 | <img src="media/play-and-eject.webp" width="240" alt="Pressing A starts Zelda; MENU ejects back to the shelf"> | <img src="media/brightness.webp" width="240" alt="L2 and R2 dim and brighten the screen"> | <img src="media/lid-close-and-resume.webp" width="240" alt="Closing the lid mid-game, reopening, then powering on from off and resuming"> |
-| A starts it. MENU ejects it. That's it. | One press, one step. | Sleep, wake, or fully power off - the game comes back where it was. |
+| A starts it. MENU ejects it. | One press, one step. | Your game is always saved. |
 
-## Why this exists
+## How it works
 
-Every retro-handheld guide out there assumes an adult reader who's comfortable with button
-chords, settings menus, and "hold X while pressing Y." That's a reasonable assumption for a
-hobbyist building their own device.
+| Button | What it does |
+|---|---|
+| **D-pad** | Pick a game |
+| **A** | Play it |
+| **MENU** | Save and go back to your games |
+| **L2 / R2** | Screen darker / brighter |
+| **Close the lid** | Save and sleep. Open it to keep playing. |
 
-slot. already got most of the way there — a minimalist shelf of cartridges, no clutter, no
-RetroArch menu to get lost in. ezGBA pushes the rest of the way: every remaining button does
-exactly one obvious thing, on contact, with no combination required to discover it.
+That's everything. Every button does one thing, on its own. No holding, no combos.
 
-## What's different from upstream
+## What's different from slot.
 
-- **No hotkeys, anywhere.** If a button does something, it does that thing by itself.
-- **L2/R2 are brightness, not rewind.** Upstream fires rewind/fast-forward on contact with
-  no hold threshold at all — genuinely easy for a small hand to trigger by accident mid-game.
-  Here they're dead to the emulator (matching real GBA hardware, which never had them) and
-  instead dim/brighten the screen, one press, one step.
-- **MENU ejects instantly.** One tap saves the game and pops the cart back onto the shelf.
-  Upstream needs MENU held for about a second, and a shorter press does nothing - which a
-  kid reads as "it's broken."
-- **The background shows the selected game**, not a random wallpaper. Scroll to Pokémon,
-  see Pokémon's own box art fill the screen behind the shelf. Recognizing a game by its
-  picture matters a lot when you can't read its title yet.
-- **Per-device theming.** Each kid's console can carry its own accent color for the
-  backdrop's tint, via `System/theme.txt`.
-- **12-hour clock.** The shelf shows `4:39 PM`, not `16:39`.
+ezGBA is built on [slot.](https://github.com/BrandonKowalski/slot). Here's what changed:
 
-Everything else — the lid-close auto-save, the wireless trading, the cartridge-shell shelf —
-is upstream's work, unchanged. This fork exists for the handful of things that needed to be
-different for a young kid specifically, not to replace what already worked.
+- **No hotkeys.** No button combos to learn or hit by accident.
+- **L2/R2 control brightness.** In slot. they rewind and fast-forward the game, which is
+  easy to press by accident mid-game.
+- **One tap of MENU saves and ejects.** slot. needs MENU held for about a second.
+- **The game's box art fills the screen.** Scroll to a game and see its cover, so you can
+  find games by picture.
+- **Your own colors.** Give each console its own background color in `System/theme.txt`.
+- **12-hour clock.** Shows `4:39 PM`, not `16:39`.
+
+Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot.'s
+work, unchanged.
 
 ## Setup
 
-Follow upstream's own install guide at [slot.kowalski.io](https://slot.kowalski.io) — the
-base setup (AGS-102, card layout, adding ROMs) is unchanged. Grab this fork's
-[releases](../../releases) instead of upstream's if you want these changes; everything else
-about the process is identical.
+1. Set up your RG SP using [slot.'s install guide](https://slot.kowalski.io).
+2. Download the latest ezGBA from [releases](../../releases).
+3. Unzip it and copy it onto the second SD card, just like slot.
 
 ## AI disclosure
 
-Built with Claude's help, on top of a frontend upstream also built with Claude's help. Every
-change was reviewed and tested on real hardware before going near an actual kid's device.
+Built with Claude's help, on top of slot., which was also built with Claude's help. Every
+change was tested on real hardware.
 
 ## Credit
 
-All of the actual hard work — the shelf, the rendering, the whole feel of the thing — is
-[BrandonKowalski/slot](https://github.com/BrandonKowalski/slot). This fork is a small,
-opinionated layer on top for one particular use case.
+The hard work - the shelf, the look, the feel - is
+[BrandonKowalski/slot](https://github.com/BrandonKowalski/slot). ezGBA is a small layer on top.
