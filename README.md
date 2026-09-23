@@ -8,12 +8,24 @@ zero adult explanation required. Every button does one obvious thing, by itself,
 
 Built on the Anbernic RG SP and built for kids or adults wanting a simple seamless GBA experience.
 
+<p align="center">
+  <img src="media/shelf-advance-wars.png" width="45%" alt="The shelf: Advance Wars selected, its box art filling the screen above the carts">
+  <img src="media/shelf-wario-land.png" width="45%" alt="The shelf: Wario Land 4 selected">
+</p>
+
+## See it in action
+
+| Pick a game, play, eject | Brightness on L2/R2 | Close the lid, pick up where you left off |
+|:---:|:---:|:---:|
+| <img src="media/play-and-eject.webp" width="240" alt="Pressing A starts Zelda; MENU ejects back to the shelf"> | <img src="media/brightness.webp" width="240" alt="L2 and R2 dim and brighten the screen"> | <img src="media/lid-close-and-resume.webp" width="240" alt="Closing the lid mid-game, reopening, then powering on from off and resuming"> |
+| A starts it. MENU ejects it. That's it. | One press, one step. | Sleep, wake, or fully power off - the game comes back where it was. |
+
 ## Why this exists
 
 Every retro-handheld guide out there assumes an adult reader who's comfortable with button
 chords, settings menus, and "hold X while pressing Y." That's a reasonable assumption for a
 hobbyist building their own device. It's a bad one for a Christmas gift going to a
-6-year-old who can't read yet.
+kid who can't read yet.
 
 slot. already got most of the way there — a minimalist shelf of cartridges, no clutter, no
 RetroArch menu to get lost in. ezGBA pushes the rest of the way: every remaining button does
@@ -34,10 +46,11 @@ exactly one obvious thing, on contact, with no combination required to discover 
   picture matters a lot when you can't read its title yet.
 - **Per-device theming.** Each kid's console can carry its own accent color for the
   backdrop's tint, via `System/theme.txt`.
+- **12-hour clock.** The shelf shows `4:39 PM`, not `16:39`.
 
 Everything else — the lid-close auto-save, the wireless trading, the cartridge-shell shelf —
 is upstream's work, unchanged. This fork exists for the handful of things that needed to be
-different for a 6-year-old specifically, not to replace what already worked.
+different for a young kid specifically, not to replace what already worked.
 
 ## Setup
 

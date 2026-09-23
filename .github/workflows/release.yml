@@ -152,7 +152,15 @@ jobs:
         run: |
           set -eu
           cat > notes.md <<NOTES
-          Unzip and copy the contents of \`slot-${GITHUB_REF_NAME}/\` onto SD2.
+          **ezGBA** - a GBA handheld with no hotkeys, no combos, and no menus to get lost in.
+          Built on [slot.](https://github.com/BrandonKowalski/slot) for kids (or anyone) who just want to
+          pick a game and play. See the [README](https://github.com/${GITHUB_REPOSITORY}#readme) for what's
+          different and short videos of it in use.
+
+          **Install:** set up the RG SP with AGS-102 per [slot's guide](https://slot.kowalski.io), then
+          unzip this and copy the contents of \`slot-${GITHUB_REF_NAME}/\` onto SD2.
+
+          ### What's in the zip
 
           | | |
           |---|---|
@@ -179,4 +187,4 @@ jobs:
           # --repo because this job never checks out: gh works out where to publish from the
           # git remote otherwise, and there is no repository here to ask.
           gh release create "$GITHUB_REF_NAME" "$ZIP" --repo "$GITHUB_REPOSITORY" \
-            --title "$GITHUB_REF_NAME" --notes-file notes.md
+            --title "ezGBA $GITHUB_REF_NAME" --notes-file notes.md
