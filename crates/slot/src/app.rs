@@ -2564,6 +2564,7 @@ impl App {
             cart,
             face,
             rest: self.shelf().rest_x(),
+            lower: SHELF_ROW_LOWER,
             seat: self.seat(),
             alert: self.alert_face.filter(|_| alpha > 0.0).map(|t| (t, alpha)),
             dim,

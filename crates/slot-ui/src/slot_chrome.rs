@@ -142,8 +142,8 @@ fn seated_x(w: f32) -> f32 {
 /// cart's over the same stretch of the animation, and its push is the same shove it always was.
 /// Rendered and looked at, that is the right way round: the pak is a bigger object sitting
 /// closer to the slot, and a heavy thing that has not far to drop should not be flung at it.
-fn catch_at(h: f32) -> f32 {
-    (LIP_Y - foot_y(h)) / (SEATED_Y - rest_y(h))
+fn catch_at(h: f32, lower: f32) -> f32 {
+    (LIP_Y - foot_y(h) - lower) / (SEATED_Y - rest_y(h) - lower)
 }
 
 /// The seat either side of the catch. It opens a little before halfway because the cart is
@@ -171,6 +171,9 @@ pub struct SlotChrome<'a> {
     /// here to the slot, so a cart that was not standing centred slides across as it goes down
     /// rather than jumping to the mouth on the first frame.
     pub rest: f32,
+    /// How far below the screen's middle the shelf row is drawn, so the travel starts where
+    /// the cart visibly stands.
+    pub lower: f32,
     /// 0.0 standing where the shelf left it, 1.0 swallowed by the mouth.
     pub seat: f32,
     /// The refusal symbol and how far into its fade it is. A cart that will not seat says so
@@ -224,8 +227,8 @@ impl SlotChrome<'_> {
         // pressed, so anything but the row's own placement is a cart that jumps on that frame —
         // and the row centres a cartridge on the screen, which puts a 253 px pak's foot 59 px
         // below a GBA cart's.
-        let stands = rest_y(ch);
-        let travel = travel(seat, ch);
+        let stands = rest_y(ch) + self.lower;
+        let travel = travel(seat, ch, self.lower);
         let x = self.rest + (seated_x(cw) - self.rest) * travel;
         let y = stands + (SEATED_Y - stands) * travel;
         // The cart fades with the case rather than through it. A seated cart is really in the
@@ -387,8 +390,8 @@ pub fn draw_empty_slot(out: &mut Vec<Draw>) {
 /// The travel, in three parts: the cart falls to the lip, rests on it, then is pushed
 /// through and settles. A single ease covers the same ground but arrives seated without ever
 /// having met anything, which is what makes it read as a card going down a chute.
-fn travel(seat: f32, h: f32) -> f32 {
-    let catch = catch_at(h);
+fn travel(seat: f32, h: f32, lower: f32) -> f32 {
+    let catch = catch_at(h, lower);
     if seat < CATCH_IN {
         catch * ease(seat / CATCH_IN)
     } else if seat < CATCH_OUT {
