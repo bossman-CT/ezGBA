@@ -51,7 +51,9 @@ pub fn clock_label(stamp: &str) -> String {
 
 pub fn hhmm(secs: i64) -> String {
     let rem = secs.rem_euclid(DAY);
-    format!("{:02}:{:02}", rem / 3600, rem / 60 % 60)
+    let (h, m) = (rem / 3600, rem / 60 % 60);
+    let h12 = if h % 12 == 0 { 12 } else { h % 12 };
+    format!("{h12}:{m:02} {}", if h < 12 { "AM" } else { "PM" })
 }
 
 const MONTHS: [&str; 12] = [

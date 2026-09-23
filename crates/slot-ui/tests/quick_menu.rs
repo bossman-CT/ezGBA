@@ -30,7 +30,7 @@ fn the_type_sits_exactly_menu_pad_in_from_both_sides_of_its_face() {
         quick_label_face(QuickRow::Rumble),
         quick_value_face("Off", false),
         quick_value_face(QuickValue::Speed6.text(), true),
-        quick_value_face("SEP 15 16:35", true),
+        quick_value_face("SEP 15 4:35 PM", true),
     ] {
         let (first, last) = ink_columns(&f);
         let right = f.w - 1 - MENU_PAD;
@@ -121,8 +121,8 @@ fn the_values_read_as_the_menu_prints_them() {
 #[test]
 fn the_date_and_time_read_as_a_month_a_day_and_the_carousels_24_hour_clock() {
     let at = |stamp: &str| date_time_text(parse_stamp(stamp).expect("a stamp"));
-    assert_eq!(at("2026-09-15_16-35-00"), "SEP 15 16:35");
-    assert_eq!(at("2027-01-05_04-07-59"), "JAN 5 04:07");
+    assert_eq!(at("2026-09-15_16-35-00"), "SEP 15 4:35 PM");
+    assert_eq!(at("2027-01-05_04-07-59"), "JAN 5 4:07 AM");
 }
 
 /// Opened from the menu, the clock starts where it already is: the time on the wall, to the
