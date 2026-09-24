@@ -116,6 +116,7 @@ fn up_and_down_move_the_bar_and_stop_at_the_ends() {
     );
     for want in [
         QuickRow::Rumble,
+        QuickRow::Clock24,
         QuickRow::DateTime,
         QuickRow::About,
         QuickRow::About,
@@ -135,6 +136,18 @@ fn rumble_flips_on_either_arrow_and_saves() {
     assert_eq!(a.quick_value(QuickRow::Rumble), Some(QuickValue::Off));
     press(&mut a, Btn::Left);
     assert!(read_slot_state(d.path()).rumble);
+}
+
+#[test]
+fn the_24_hour_clock_flips_on_either_arrow_and_saves() {
+    let (d, mut a, _) = on_carousel();
+    open_at(&mut a, QuickRow::Clock24);
+    assert_eq!(a.quick_value(QuickRow::Clock24), Some(QuickValue::Off));
+    press(&mut a, Btn::Right);
+    assert!(read_slot_state(d.path()).clock_24);
+    assert_eq!(a.quick_value(QuickRow::Clock24), Some(QuickValue::On));
+    press(&mut a, Btn::Left);
+    assert!(!read_slot_state(d.path()).clock_24);
 }
 
 /// MENU's press arrives as an eject once it is held past the tap threshold, which every real

@@ -11,15 +11,17 @@ use crate::text;
 pub enum QuickRow {
     ColourCorrection,
     Rumble,
+    Clock24,
     DateTime,
     About,
 }
 
 impl QuickRow {
     /// Fast Forward and its Sound are gone: R2 is brightness in ezGBA, so nothing can start it.
-    pub const ALL: [QuickRow; 4] = [
+    pub const ALL: [QuickRow; 5] = [
         QuickRow::ColourCorrection,
         QuickRow::Rumble,
+        QuickRow::Clock24,
         QuickRow::DateTime,
         QuickRow::About,
     ];
@@ -33,6 +35,7 @@ impl QuickRow {
         match self {
             QuickRow::ColourCorrection => "Colour Correction",
             QuickRow::Rumble => "Rumble",
+            QuickRow::Clock24 => "24-Hour Clock",
             QuickRow::DateTime => "Date & Time",
             QuickRow::About => "About",
         }

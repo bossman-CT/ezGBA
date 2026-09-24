@@ -95,6 +95,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
         [
             "Colour Correction",
             "Rumble",
+            "24-Hour Clock",
             "Date & Time",
             "About"
         ]

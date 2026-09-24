@@ -736,6 +736,7 @@ impl App {
         let mut app = App::new(scan(root).unwrap_or_default());
         app.root = Some(root.to_path_buf());
         app.state = read_slot_state(root);
+        slot_ui::set_clock_24(app.state.clock_24);
         if app.state.clock_set {
             app.start();
         } else {
@@ -933,6 +934,7 @@ impl App {
         match row {
             QuickRow::ColourCorrection => Some(QuickValue::flag(self.state.colour_correction)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
+            QuickRow::Clock24 => Some(QuickValue::flag(self.state.clock_24)),
             QuickRow::DateTime | QuickRow::About => None,
         }
     }
@@ -1776,7 +1778,7 @@ impl App {
                 self.phase = clock_screen(self.utc_secs(), self.state.utc_offset_min, true);
             }
             QuickRow::About => self.phase = Phase::About,
-            QuickRow::ColourCorrection | QuickRow::Rumble => {}
+            QuickRow::ColourCorrection | QuickRow::Rumble | QuickRow::Clock24 => {}
         }
     }
 
@@ -1789,6 +1791,10 @@ impl App {
             // Two values each, so either arrow is the other one.
             QuickRow::ColourCorrection => s.colour_correction = !s.colour_correction,
             QuickRow::Rumble => s.rumble = !s.rumble,
+            QuickRow::Clock24 => {
+                s.clock_24 = !s.clock_24;
+                slot_ui::set_clock_24(s.clock_24);
+            }
             QuickRow::DateTime | QuickRow::About => return,
         }
         self.persist();
