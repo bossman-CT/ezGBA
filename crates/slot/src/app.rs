@@ -394,7 +394,23 @@ pub enum Phase {
     Doze {
         cart: Option<String>,
     },
+    /// A personal video from `System/greeting`, shown once on first boot and again by holding
+    /// A on About.
+    Greeting {
+        then: GreetingThen,
+    },
 }
+
+/// Where a greeting hands back to when it ends.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GreetingThen {
+    Start,
+    Menu,
+}
+
+pub const GREETING_FPS: f64 = 15.0;
+/// How long A has to be held on About to replay the greeting.
+pub const GREETING_HOLD_MS: Millis = 1500;
 
 pub struct App {
     phase: Phase,
@@ -572,6 +588,15 @@ pub struct App {
     quick_clock_faces: Option<[(TexId, u32, u32); 2]>,
     /// The label, rasterised whole. Re-uploaded when the gauge moves.
     sticker_face: Option<TexId>,
+    /// Frames in `System/greeting/frames`; 0 means the card has no greeting.
+    greeting_frames: usize,
+    /// How far into the greeting, by the frame clock.
+    greeting_ms: f64,
+    /// How far into the greeting by the audio actually played, when there is audio.
+    greeting_audio_ms: Option<f64>,
+    greeting_face: Option<TexId>,
+    /// When A went down on About, so a hold can replay the greeting and a tap still opens it.
+    about_a_down: Option<Millis>,
     /// One picture from `Wallpapers`, behind everything the shelf draws. `None` on a card
     /// that carries none, which is the common case.
     wallpaper: Option<TexId>,
@@ -704,6 +729,11 @@ impl App {
             quick_menu_faces: None,
             quick_clock_faces: None,
             sticker_face: None,
+            greeting_frames: 0,
+            greeting_ms: 0.0,
+            greeting_audio_ms: None,
+            greeting_face: None,
+            about_a_down: None,
             wallpaper: None,
             battery_percent: slot_ui::Printed::default(),
             bolt: None,
@@ -736,6 +766,7 @@ impl App {
         let mut app = App::new(scan(root).unwrap_or_default());
         app.root = Some(root.to_path_buf());
         app.state = read_slot_state(root);
+        app.greeting_frames = greeting_frame_count(root);
         if app.state.clock_set {
             app.start();
         } else {
@@ -749,6 +780,10 @@ impl App {
     /// Into the slot or onto the shelf. Reached on boot once the clock is known, and from
     /// the clock screen when it becomes known.
     fn start(&mut self) {
+        if self.greeting_frames > 0 && !self.state.greeted {
+            self.begin_greeting(GreetingThen::Start);
+            return;
+        }
         // One cart is a dedicated device. There is nothing to choose between, so whatever
         // `slot.state` remembers, including a cart that is no longer on the card, names the
         // only thing it could have meant.
@@ -1743,6 +1778,7 @@ impl App {
         if !slot_ui::theme().menu {
             return;
         }
+        self.about_a_down = None;
         self.phase = Phase::QuickMenu {
             row: QuickRow::ALL[0],
         };
@@ -1754,6 +1790,16 @@ impl App {
         let row = match action {
             Action::GbaDown(Btn::Up) => row.up(),
             Action::GbaDown(Btn::Down) => row.down(),
+            Action::GbaDown(Btn::A) if row == QuickRow::About => {
+                self.about_a_down = Some(self.now());
+                return;
+            }
+            Action::GbaUp(Btn::A) => {
+                if self.about_a_down.take().is_some() && row == QuickRow::About {
+                    self.open_quick_row(row);
+                }
+                return;
+            }
             Action::GbaDown(Btn::A) => return self.open_quick_row(row),
             Action::GbaDown(Btn::B) | Action::QuickMenu | Action::Eject => {
                 self.phase = Phase::Shelf;
@@ -1921,6 +1967,83 @@ impl App {
         self.clock as Millis
     }
 
+    fn begin_greeting(&mut self, then: GreetingThen) {
+        self.greeting_ms = 0.0;
+        self.greeting_audio_ms = None;
+        self.phase = Phase::Greeting { then };
+    }
+
+    fn update_greeting(&mut self, dt: f32) {
+        let held_on_about = matches!(
+            self.phase,
+            Phase::QuickMenu {
+                row: QuickRow::About
+            }
+        );
+        if let Some(down) = self.about_a_down {
+            if !held_on_about {
+                self.about_a_down = None;
+            } else if self.greeting_frames > 0
+                && self.now().saturating_sub(down) >= GREETING_HOLD_MS
+            {
+                self.about_a_down = None;
+                self.begin_greeting(GreetingThen::Menu);
+            }
+        }
+        let Phase::Greeting { then } = self.phase else {
+            return;
+        };
+        self.greeting_ms += dt as f64 * 1000.0;
+        let length = self.greeting_frames as f64 * 1000.0 / GREETING_FPS;
+        if self.greeting_time() >= length {
+            self.state.greeted = true;
+            self.persist();
+            self.greeting_audio_ms = None;
+            match then {
+                GreetingThen::Start => self.start(),
+                GreetingThen::Menu => {
+                    self.phase = Phase::QuickMenu {
+                        row: QuickRow::About,
+                    }
+                }
+            }
+        }
+    }
+
+    /// The audio's clock when it is playing, so the picture follows the voice.
+    fn greeting_time(&self) -> f64 {
+        self.greeting_audio_ms.unwrap_or(self.greeting_ms)
+    }
+
+    /// Which frame to show, while a greeting is on screen.
+    pub fn greeting_frame(&self) -> Option<usize> {
+        if !matches!(self.phase, Phase::Greeting { .. }) || self.greeting_frames == 0 {
+            return None;
+        }
+        let i = (self.greeting_time() / 1000.0 * GREETING_FPS) as usize;
+        Some(i.min(self.greeting_frames - 1))
+    }
+
+    pub fn set_greeting_audio_ms(&mut self, ms: f64) {
+        self.greeting_audio_ms = Some(ms);
+    }
+
+    /// The audio has all played. The frame clock carries on from where it got to, so a picture
+    /// a little longer than its sound still reaches its last frame.
+    pub fn end_greeting_audio(&mut self) {
+        if let Some(ms) = self.greeting_audio_ms.take() {
+            self.greeting_ms = self.greeting_ms.max(ms);
+        }
+    }
+
+    pub fn set_greeting_face(&mut self, face: TexId) {
+        self.greeting_face = Some(face);
+    }
+
+    pub fn in_greeting(&self) -> bool {
+        matches!(self.phase, Phase::Greeting { .. })
+    }
+
     fn flick(&mut self, step: fn(&mut Polaroids)) {
         if let Some(p) = &mut self.polaroids {
             step(p);
@@ -1930,6 +2053,7 @@ impl App {
     pub fn update(&mut self, dt: f32) {
         self.clock += dt as f64 * 1000.0;
         self.timers();
+        self.update_greeting(dt);
         // A queue poll rather than a syscall, so the frame loop can afford it every frame —
         // which is the whole reason the slow parts of starting a link are on a thread of
         // their own.
@@ -2448,6 +2572,26 @@ impl App {
                     h: OUT_H as f32,
                     colour: [0.0, 0.0, 0.0, 1.0],
                 });
+                return;
+            }
+            Phase::Greeting { .. } => {
+                out.push(Draw::Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    w: OUT_W as f32,
+                    h: OUT_H as f32,
+                    colour: [0.0, 0.0, 0.0, 1.0],
+                });
+                if let Some(tex) = self.greeting_face {
+                    out.push(Draw::Tex {
+                        x: 0.0,
+                        y: 0.0,
+                        w: OUT_W as f32,
+                        h: OUT_H as f32,
+                        tex,
+                        alpha: 1.0,
+                    });
+                }
                 return;
             }
         }
@@ -4258,4 +4402,20 @@ fn draw_menu_rows(
             alpha: 1.0,
         });
     }
+}
+
+/// Where a card keeps its greeting: numbered PNG frames and one mono 48 kHz PCM track.
+pub fn greeting_dir(root: &Path) -> PathBuf {
+    root.join("System").join("greeting")
+}
+
+pub fn greeting_frame_path(root: &Path, i: usize) -> PathBuf {
+    greeting_dir(root).join("frames").join(format!("{:04}.png", i + 1))
+}
+
+/// Counted from 0001 up to the first gap, so a half-copied folder plays what is there.
+fn greeting_frame_count(root: &Path) -> usize {
+    (0..)
+        .take_while(|&i| greeting_frame_path(root, i).is_file())
+        .count()
 }

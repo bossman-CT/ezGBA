@@ -69,6 +69,14 @@ pub struct Frontend {
     clocks: Clocks,
     about: AboutFace,
     quick_clock: QuickClock,
+    greeting: GreetingFace,
+}
+
+/// The greeting's picture, and which frame is in it.
+#[derive(Default)]
+struct GreetingFace {
+    tex: Option<TexId>,
+    shown: Option<usize>,
 }
 
 /// Date & Time's value in the quick menu, grey and lit, and the text they were built for.
@@ -138,6 +146,7 @@ impl Frontend {
             clocks: Clocks::default(),
             about: AboutFace::default(),
             quick_clock: QuickClock::default(),
+            greeting: GreetingFace::default(),
         }
     }
 
@@ -393,6 +402,7 @@ impl Frontend {
         }
         sync_clock(self.session.app_mut(), compositor, &mut self.clocks);
         sync_about(self.session.app_mut(), compositor, &mut self.about);
+        sync_greeting(self.session.app_mut(), compositor, &mut self.greeting);
         sync_quick_clock(self.session.app_mut(), compositor, &mut self.quick_clock);
         sync_core_picker(
             self.session.app_mut(),
@@ -621,6 +631,27 @@ fn sync_quick_clock(app: &mut App, compositor: &mut Compositor, state: &mut Quic
     let lit = upload(compositor, &mut state.lit, lit);
     app.set_quick_clock_faces((dim, dim_size.0, dim_size.1), (lit, lit_size.0, lit_size.1));
     state.shown = text;
+}
+
+/// One PNG decode each time the greeting's clock reaches a new frame.
+fn sync_greeting(app: &mut App, compositor: &mut Compositor, state: &mut GreetingFace) {
+    let Some(i) = app.greeting_frame() else {
+        state.shown = None;
+        return;
+    };
+    if state.shown == Some(i) {
+        return;
+    }
+    let Some(root) = app.root() else {
+        return;
+    };
+    let path = crate::app::greeting_frame_path(root, i);
+    state.shown = Some(i);
+    let Some(rgba) = wallpaper_face(&path) else {
+        return;
+    };
+    let id = upload_rgba(compositor, &mut state.tex, OUT_W, OUT_H, &rgba);
+    app.set_greeting_face(id);
 }
 
 /// Built only once the screen is up: it is a 660 by 228 rasterisation and most sessions never

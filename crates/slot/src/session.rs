@@ -32,6 +32,8 @@ pub struct Session {
     /// A reload for a link is underway: the core in the slot was spawned for it, and `App` is
     /// waiting to hear whether it loaded. See `reload_for_link`.
     reloading: bool,
+    /// The greeting's sound at the sink's rate, and how much of it is in the ring so far.
+    greeting_pcm: Option<(Vec<i16>, usize)>,
 }
 
 impl Session {
@@ -53,6 +55,7 @@ impl Session {
             fast: false,
             motor: 0,
             reloading: false,
+            greeting_pcm: None,
         }
     }
 
@@ -70,6 +73,46 @@ impl Session {
         // slot stays loud under a game turned all the way down.
         crate::audio::volume::apply(&mut samples, self.app.output_volume());
         ring.mix(&samples);
+    }
+
+    /// The ring holds about eight frames of audio, so the greeting is topped up every frame
+    /// rather than mixed in whole, and the picture is timed off what has actually played.
+    fn sync_greeting_audio(&mut self) {
+        if !self.app.in_greeting() {
+            self.greeting_pcm = None;
+            return;
+        }
+        let ring = self.sink.ring();
+        let rate = ring.sample_rate();
+        if rate == 0 {
+            return;
+        }
+        if self.greeting_pcm.is_none() {
+            let path = crate::app::greeting_dir(&self.root).join("audio.pcm");
+            let Ok(bytes) = std::fs::read(path) else {
+                return;
+            };
+            let mut samples = crate::audio::render_pcm(&bytes, rate);
+            crate::audio::volume::apply(&mut samples, self.app.output_volume());
+            self.greeting_pcm = Some((samples, 0));
+        }
+        let Some((samples, at)) = &mut self.greeting_pcm else {
+            return;
+        };
+        let room = ring.capacity_frames().saturating_sub(ring.queued_frames()) * 2;
+        let end = (*at + room).min(samples.len());
+        if end > *at {
+            ring.push(&samples[*at..end]);
+            *at = end;
+        }
+        let queued = ring.queued_frames() * 2;
+        let played = at.saturating_sub(queued);
+        if *at >= samples.len() && queued == 0 {
+            self.app.end_greeting_audio();
+        } else {
+            self.app
+                .set_greeting_audio_ms(played as f64 / 2.0 / rate as f64 * 1000.0);
+        }
     }
 
     pub fn audio_queued(&self) -> usize {
@@ -332,6 +375,7 @@ impl Session {
         if let Some(sfx) = self.app.take_sfx() {
             self.play_sfx(sfx);
         }
+        self.sync_greeting_audio();
         self.sync_core();
         self.sync_reload();
         // After the core sync: a handle spawned or dropped this frame has published nothing

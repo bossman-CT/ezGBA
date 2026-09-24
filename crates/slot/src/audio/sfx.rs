@@ -51,6 +51,17 @@ impl Sfx {
     }
 }
 
+/// Any mono 48 kHz clip, as interleaved stereo at the sink's rate.
+pub fn render_pcm(pcm: &[u8], sample_rate: u32) -> Vec<i16> {
+    let mut out = Vec::with_capacity(pcm.len());
+    for v in resampled(pcm, sample_rate) {
+        let s = v.clamp(-32768.0, 32767.0) as i16;
+        out.push(s);
+        out.push(s);
+    }
+    out
+}
+
 /// Linear, from the asset's 48 kHz to whatever the sink runs at. Both are the same rate on
 /// every platform this has met so far, so this is a safeguard rather than a hot path.
 fn resampled(pcm: &[u8], sample_rate: u32) -> Vec<f32> {

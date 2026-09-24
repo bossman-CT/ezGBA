@@ -11,7 +11,7 @@ pub use alsa::AlsaSink;
 #[cfg(feature = "host")]
 pub use host::HostAudio;
 pub use ring::{ring_capacity, Ring};
-pub use sfx::Sfx;
+pub use sfx::{render_pcm, Sfx};
 pub use sink::{AudioError, AudioSink};
 pub use stub::StubSink;
 
