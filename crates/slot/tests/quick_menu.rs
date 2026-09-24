@@ -57,13 +57,13 @@ fn open_at(a: &mut App, row: QuickRow) {
 fn menu_opens_the_quick_menu_with_its_top_row_selected_every_time() {
     let (_d, mut a, _) = on_carousel();
     a.apply(Action::QuickMenu);
-    assert_eq!(a.quick_menu(), Some(QuickRow::ColourCorrection));
+    assert_eq!(a.quick_menu(), Some(QuickRow::DateTime));
     press(&mut a, Btn::Down);
     a.apply(Action::QuickMenu);
     a.apply(Action::QuickMenu);
     assert_eq!(
         a.quick_menu(),
-        Some(QuickRow::ColourCorrection),
+        Some(QuickRow::DateTime),
         "the menu opened where it was last left"
     );
 }
@@ -111,43 +111,13 @@ fn up_and_down_move_the_bar_and_stop_at_the_ends() {
     press(&mut a, Btn::Up);
     assert_eq!(
         a.quick_menu(),
-        Some(QuickRow::ColourCorrection),
+        Some(QuickRow::DateTime),
         "wrapped off the top"
     );
-    for want in [
-        QuickRow::Rumble,
-        QuickRow::Clock24,
-        QuickRow::DateTime,
-        QuickRow::About,
-        QuickRow::About,
-    ] {
+    for want in [QuickRow::About, QuickRow::About] {
         press(&mut a, Btn::Down);
         assert_eq!(a.quick_menu(), Some(want));
     }
-}
-
-#[test]
-fn rumble_flips_on_either_arrow_and_saves() {
-    let (d, mut a, _) = on_carousel();
-    open_at(&mut a, QuickRow::Rumble);
-    press(&mut a, Btn::Right);
-    assert!(!read_slot_state(d.path()).rumble);
-    assert!(!a.rumble_enabled());
-    assert_eq!(a.quick_value(QuickRow::Rumble), Some(QuickValue::Off));
-    press(&mut a, Btn::Left);
-    assert!(read_slot_state(d.path()).rumble);
-}
-
-#[test]
-fn the_24_hour_clock_flips_on_either_arrow_and_saves() {
-    let (d, mut a, _) = on_carousel();
-    open_at(&mut a, QuickRow::Clock24);
-    assert_eq!(a.quick_value(QuickRow::Clock24), Some(QuickValue::Off));
-    press(&mut a, Btn::Right);
-    assert!(read_slot_state(d.path()).clock_24);
-    assert_eq!(a.quick_value(QuickRow::Clock24), Some(QuickValue::On));
-    press(&mut a, Btn::Left);
-    assert!(!read_slot_state(d.path()).clock_24);
 }
 
 /// MENU's press arrives as an eject once it is held past the tap threshold, which every real
@@ -159,63 +129,6 @@ fn a_menu_press_on_the_shelf_opens_and_closes_the_menu() {
     assert_eq!(a.quick_menu(), Some(QuickRow::ALL[0]));
     a.apply(Action::Eject);
     assert!(matches!(a.phase(), Phase::Shelf), "{:?}", a.phase());
-}
-
-/// Colour Correction is a two-value row like the other flags, so either arrow is the other
-/// value, and every press is on the card before the menu closes. The menu is only ever open
-/// with nothing seated, so the card is the whole of where a change has to survive: the next
-/// cart in is what reads it.
-#[test]
-fn colour_correction_flips_on_either_arrow_and_saves() {
-    let (d, mut a, _) = on_carousel();
-    open_at(&mut a, QuickRow::ColourCorrection);
-    assert!(
-        !a.colour_correction(),
-        "the row did not open on the default, which is off"
-    );
-    assert_eq!(
-        a.quick_value(QuickRow::ColourCorrection),
-        Some(QuickValue::Off)
-    );
-    for (btn, want) in [
-        (Btn::Right, true),
-        (Btn::Left, false),
-        (Btn::Left, true),
-        (Btn::Right, false),
-    ] {
-        press(&mut a, btn);
-        assert_eq!(a.colour_correction(), want, "{btn:?}");
-        assert_eq!(
-            read_slot_state(d.path()).colour_correction,
-            want,
-            "{btn:?} never reached the card"
-        );
-        assert_eq!(
-            a.quick_value(QuickRow::ColourCorrection),
-            Some(QuickValue::flag(want))
-        );
-    }
-}
-
-/// The row changes the picture and nothing else. Its neighbours are the settings most likely to
-/// be hit by a stray arrow on the way past it, and the fast forward speed in particular shares
-/// the arrows it answers to.
-#[test]
-fn colour_correction_leaves_the_settings_around_it_alone() {
-    let (d, mut a, _) = on_carousel();
-    open_at(&mut a, QuickRow::ColourCorrection);
-    press(&mut a, Btn::Right);
-    let s = read_slot_state(d.path());
-    assert!(s.colour_correction, "the row never took");
-    assert_eq!(
-        (s.ff_speed, s.ff_sound, s.rumble),
-        (
-            SlotState::default().ff_speed,
-            SlotState::default().ff_sound,
-            SlotState::default().rumble
-        ),
-        "the row reached a setting that is not its own"
-    );
 }
 
 #[test]
@@ -339,7 +252,7 @@ fn brightness_and_volume_still_answer_over_the_quick_menu() {
         .map(|i| TexId::from_raw(700 + i))
         .collect();
     a.set_icon_faces(icons.clone());
-    open_at(&mut a, QuickRow::ColourCorrection);
+    open_at(&mut a, QuickRow::DateTime);
     let before = read_slot_state(d.path());
     a.apply(Action::BrightnessUp);
     a.apply(Action::VolumeDown);
@@ -350,7 +263,7 @@ fn brightness_and_volume_still_answer_over_the_quick_menu() {
     );
     assert_eq!(
         a.quick_menu(),
-        Some(QuickRow::ColourCorrection),
+        Some(QuickRow::DateTime),
         "a level moved the menu"
     );
     let out = frame(&a);

@@ -736,7 +736,6 @@ impl App {
         let mut app = App::new(scan(root).unwrap_or_default());
         app.root = Some(root.to_path_buf());
         app.state = read_slot_state(root);
-        slot_ui::set_clock_24(app.state.clock_24);
         if app.state.clock_set {
             app.start();
         } else {
@@ -932,9 +931,6 @@ impl App {
     /// Time's value is the clock, which the binary rasterises, and About has none.
     pub fn quick_value(&self, row: QuickRow) -> Option<QuickValue> {
         match row {
-            QuickRow::ColourCorrection => Some(QuickValue::flag(self.state.colour_correction)),
-            QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
-            QuickRow::Clock24 => Some(QuickValue::flag(self.state.clock_24)),
             QuickRow::DateTime | QuickRow::About => None,
         }
     }
@@ -1751,14 +1747,12 @@ impl App {
         };
     }
 
-    /// Up and Down move the bar and stop at the ends, Left and Right change the row in hand, A
-    /// opens the two rows that open, and MENU or B puts the carousel back.
+    /// Up and Down move the bar and stop at the ends, A opens the row, and MENU or B puts the
+    /// carousel back.
     fn quick_menu_input(&mut self, row: QuickRow, action: Action) {
         let row = match action {
             Action::GbaDown(Btn::Up) => row.up(),
             Action::GbaDown(Btn::Down) => row.down(),
-            Action::GbaDown(Btn::Left) => return self.change_setting(row, false),
-            Action::GbaDown(Btn::Right) => return self.change_setting(row, true),
             Action::GbaDown(Btn::A) => return self.open_quick_row(row),
             Action::GbaDown(Btn::B) | Action::QuickMenu | Action::Eject => {
                 self.phase = Phase::Shelf;
@@ -1769,7 +1763,7 @@ impl App {
         self.phase = Phase::QuickMenu { row };
     }
 
-    /// A on a row. Only Date & Time and About open anything.
+    /// A on a row.
     fn open_quick_row(&mut self, row: QuickRow) {
         match row {
             QuickRow::DateTime => {
@@ -1778,26 +1772,7 @@ impl App {
                 self.phase = clock_screen(self.utc_secs(), self.state.utc_offset_min, true);
             }
             QuickRow::About => self.phase = Phase::About,
-            QuickRow::ColourCorrection | QuickRow::Rumble | QuickRow::Clock24 => {}
         }
-    }
-
-    /// Left or Right on the row in hand. It takes effect at once and goes straight to the card,
-    /// the way brightness does, with no save step to forget. A press against an end changes
-    /// nothing and writes nothing.
-    fn change_setting(&mut self, row: QuickRow, right: bool) {
-        let s = &mut self.state;
-        match row {
-            // Two values each, so either arrow is the other one.
-            QuickRow::ColourCorrection => s.colour_correction = !s.colour_correction,
-            QuickRow::Rumble => s.rumble = !s.rumble,
-            QuickRow::Clock24 => {
-                s.clock_24 = !s.clock_24;
-                slot_ui::set_clock_24(s.clock_24);
-            }
-            QuickRow::DateTime | QuickRow::About => return,
-        }
-        self.persist();
     }
 
     /// Applied at a stated moment rather than at whatever the accumulated clock has reached.

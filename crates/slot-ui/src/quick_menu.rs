@@ -9,19 +9,14 @@ use crate::text;
 /// The menu's rows, top to bottom in the order the user chose.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum QuickRow {
-    ColourCorrection,
-    Rumble,
-    Clock24,
     DateTime,
     About,
 }
 
 impl QuickRow {
-    /// Fast Forward and its Sound are gone: R2 is brightness in ezGBA, so nothing can start it.
-    pub const ALL: [QuickRow; 5] = [
-        QuickRow::ColourCorrection,
-        QuickRow::Rumble,
-        QuickRow::Clock24,
+    /// ezGBA keeps only the two rows that open something. Rumble and colour correction stay at
+    /// their defaults, and fast forward cannot start with R2 as brightness.
+    pub const ALL: [QuickRow; 2] = [
         QuickRow::DateTime,
         QuickRow::About,
     ];
@@ -33,9 +28,6 @@ impl QuickRow {
 
     pub fn label(self) -> &'static str {
         match self {
-            QuickRow::ColourCorrection => "Colour Correction",
-            QuickRow::Rumble => "Rumble",
-            QuickRow::Clock24 => "24-Hour Clock",
             QuickRow::DateTime => "Date & Time",
             QuickRow::About => "About",
         }

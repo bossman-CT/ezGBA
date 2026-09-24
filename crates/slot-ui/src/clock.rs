@@ -49,19 +49,9 @@ pub fn clock_label(stamp: &str) -> String {
     parse_stamp(stamp).map(hhmm).unwrap_or_default()
 }
 
-static CLOCK_24: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-
-/// The 24-Hour Clock setting, which every clock drawn after this follows.
-pub fn set_clock_24(on: bool) {
-    CLOCK_24.store(on, std::sync::atomic::Ordering::Relaxed);
-}
-
 pub fn hhmm(secs: i64) -> String {
     let rem = secs.rem_euclid(DAY);
     let (h, m) = (rem / 3600, rem / 60 % 60);
-    if CLOCK_24.load(std::sync::atomic::Ordering::Relaxed) {
-        return format!("{h:02}:{m:02}");
-    }
     let h12 = if h % 12 == 0 { 12 } else { h % 12 };
     format!("{h12}:{m:02} {}", if h < 12 { "AM" } else { "PM" })
 }

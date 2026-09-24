@@ -26,8 +26,8 @@ fn ink_columns(f: &UndoFace) -> (u32, u32) {
 #[test]
 fn the_type_sits_exactly_menu_pad_in_from_both_sides_of_its_face() {
     for f in [
-        quick_label_face(QuickRow::ColourCorrection),
-        quick_label_face(QuickRow::Rumble),
+        quick_label_face(QuickRow::DateTime),
+        quick_label_face(QuickRow::About),
         quick_value_face("Off", false),
         quick_value_face(QuickValue::Speed6.text(), true),
         quick_value_face("SEP 15 4:35 PM", true),
@@ -56,8 +56,8 @@ fn a_long_label_is_set_as_large_as_a_short_one() {
             .filter(|&y| (0..f.w).any(|x| inked(f, x, y)))
             .count()
     };
-    let long = tall(&quick_label_face(QuickRow::ColourCorrection));
-    let short = tall(&quick_label_face(QuickRow::Rumble));
+    let long = tall(&quick_label_face(QuickRow::DateTime));
+    let short = tall(&quick_label_face(QuickRow::About));
     assert!(long + 1 >= short, "{long} rows of ink against {short}");
 }
 
@@ -86,19 +86,13 @@ fn the_fast_forward_row_offers_the_four_ceilings_the_card_can_hold() {
     }
 }
 
-/// ezGBA drops slot.'s Fast Forward pair, which nothing can trigger once R2 is brightness.
+/// ezGBA keeps only Date & Time and About.
 #[test]
 fn the_rows_run_in_the_order_the_user_chose() {
     let labels = QuickRow::ALL.map(QuickRow::label);
     assert_eq!(
         labels,
-        [
-            "Colour Correction",
-            "Rumble",
-            "24-Hour Clock",
-            "Date & Time",
-            "About"
-        ]
+        ["Date & Time", "About"]
     );
     let opens: Vec<QuickRow> = QuickRow::ALL.into_iter().filter(|r| r.opens()).collect();
     assert_eq!(opens, [QuickRow::DateTime, QuickRow::About]);

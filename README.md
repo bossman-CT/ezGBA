@@ -40,16 +40,15 @@ ezGBA is built on [slot.](https://github.com/BrandonKowalski/slot). Here's what 
 - **The game's box art fills the screen.** Scroll to a game and see its cover, so you can
   find games by picture.
 - **Your own colors.** Give each console its own background color in `System/theme.txt`.
-- **12-hour clock.** Shows `4:39 PM`, not `16:39`. Prefer 24-hour? Switch it in the menu.
-- **A shorter settings menu.** Just Colour Correction, Rumble, 24-Hour Clock, Date & Time, and About.
+- **12-hour clock.** Shows `4:39 PM`, not `16:39`.
+- **A tiny settings menu.** Just Date & Time and About. Nothing in it can mess anything up.
 
 Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot.'s
 work, unchanged.
 
 ## Settings
 
-Tap **MENU** on the shelf to set the time, switch to a 24-hour clock, turn on colour
-correction or rumble, or see About.
+Tap **MENU** on the shelf to set the date and time, or see About.
 
 For a couple more options, edit `System/theme.txt` on the SD card:
 

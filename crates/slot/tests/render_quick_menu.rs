@@ -85,7 +85,6 @@ fn the_quick_menu_renders_full_screen() {
     // instead of leaving this quietly one press short of where it says it is.
     let mut bar_on = QuickRow::ALL[0];
     for (name, selected) in [
-        ("colour-correction", QuickRow::ColourCorrection),
         ("date-time", QuickRow::DateTime),
         ("about", QuickRow::About),
     ] {
