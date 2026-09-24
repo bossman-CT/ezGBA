@@ -76,19 +76,17 @@ pub const CREDITS: [&str; 10] = [
     "OPEN SANS AND NERD FONTS",
     "SYMBOLS BY RYAN L MCINTYRE.",
     "THE PANEL MASK IS DERIVED",
-    "FROM GIGAHERZ'S LCD3X. THE",
-    "CART SOUNDS ARE MY CHILDHOOD",
-    "GAMEBOY. I WASTED WATER",
-    "BUILDING THIS WITH CLAUDE.",
+    "FROM GIGAHERZ'S LCD3X. BUILT",
+    "ON SLOT BY BRANDON KOWALSKI.",
+    "FOR MY KIDS AND YOURS.",
+    "HAVE FUN PLAYING!",
 ];
 
-/// The article's own origin row, kept word for word. It is the one place the joke is funnier
-/// left alone than rewritten.
-pub const ORIGIN: [&str; 2] = ["S/LOT-USA", "MADE IN ITHACA"];
+pub const ORIGIN: [&str; 2] = ["EZGBA-USA", "MADE WITH LOVE"];
 
 /// The bottom right block, under the lockup. The copyright sign is a real glyph here; the
 /// article's circled M beside it is not, and is not true of this anyway.
-pub const COPYRIGHT: &str = "\u{a9} 2026 BRANDON T. KOWALSKI";
+pub const COPYRIGHT: &str = "\u{a9} 2026 BOSSMAN-CT";
 
 pub const HOME: &str = "SEE README.";
 
