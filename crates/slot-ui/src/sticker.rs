@@ -82,7 +82,7 @@ pub const CREDITS: [&str; 10] = [
     "HAVE FUN PLAYING!",
 ];
 
-pub const ORIGIN: [&str; 2] = ["EZGBA-USA", "MADE WITH LOVE"];
+pub const ORIGIN: [&str; 2] = ["EZGBA-USA", "MADE IN TOLEDO"];
 
 /// The bottom right block, under the lockup. The copyright sign is a real glyph here; the
 /// article's circled M beside it is not, and is not true of this anyway.
