@@ -63,6 +63,10 @@ For a couple more options, edit `System/theme.txt` on the SD card:
 1. Set up your RG SP using [slot.'s install guide](https://slot.kowalski.io).
 2. Download the latest ezGBA from [releases](../../releases).
 3. Unzip it and copy it onto the second SD card, just like slot.
+4. **Add box art (optional).** Box art isn't included, since it belongs to the publishers.
+   Put a 720×480 PNG in `Backdrops/GBA/`, named the same as the game, for example
+   `Backdrops/GBA/Pokemon - FireRed Version (USA).png`. Keep the art in the top 270 pixels
+   so the carts don't cover it.
 
 ## AI disclosure
 
