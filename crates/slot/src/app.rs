@@ -931,6 +931,7 @@ impl App {
     /// Time's value is the clock, which the binary rasterises, and About has none.
     pub fn quick_value(&self, row: QuickRow) -> Option<QuickValue> {
         match row {
+            QuickRow::Brightness => Some(QuickValue::L2R2),
             QuickRow::DateTime | QuickRow::About => None,
         }
     }
@@ -1772,6 +1773,7 @@ impl App {
                 self.phase = clock_screen(self.utc_secs(), self.state.utc_offset_min, true);
             }
             QuickRow::About => self.phase = Phase::About,
+            QuickRow::Brightness => {}
         }
     }
 

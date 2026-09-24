@@ -48,7 +48,8 @@ work, unchanged.
 
 ## Settings
 
-Tap **MENU** on the shelf to set the date and time, or see About.
+Tap **MENU** on the shelf to set the date and time, or see About. It also reminds you that
+L2 / R2 change the brightness.
 
 For a couple more options, edit `System/theme.txt` on the SD card:
 

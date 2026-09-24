@@ -120,6 +120,18 @@ fn up_and_down_move_the_bar_and_stop_at_the_ends() {
     }
 }
 
+/// Brightness is a note, not a setting: it shows the buttons and the bar walks past it.
+#[test]
+fn the_brightness_row_shows_its_buttons_and_is_never_selected() {
+    let (_d, mut a, _) = on_carousel();
+    a.apply(Action::QuickMenu);
+    for _ in 0..QuickRow::ALL.len() {
+        press(&mut a, Btn::Down);
+    }
+    assert_eq!(a.quick_menu(), Some(QuickRow::About));
+    assert_eq!(a.quick_value(QuickRow::Brightness), Some(QuickValue::L2R2));
+}
+
 /// MENU's press arrives as an eject once it is held past the tap threshold, which every real
 /// press is. On the shelf that opens the menu, and a second press closes it.
 #[test]
@@ -325,7 +337,7 @@ fn the_legend_says_change_on_a_value_row_and_open_on_a_row_that_opens() {
     let (_d, mut a, _) = on_carousel();
     fake_faces(&mut a);
     a.apply(Action::QuickMenu);
-    for row in QuickRow::ALL {
+    for row in [QuickRow::DateTime, QuickRow::About] {
         assert_eq!(a.quick_menu(), Some(row));
         let out = frame(&a);
         assert!(drawn(&out, 400), "no B BACK on {row:?}");
@@ -379,7 +391,7 @@ fn the_bar_runs_edge_to_edge_behind_the_selected_row() {
     let (_d, mut a, _) = on_carousel();
     fake_faces(&mut a);
     a.apply(Action::QuickMenu);
-    for row in QuickRow::ALL {
+    for row in [QuickRow::DateTime, QuickRow::About] {
         let bars: Vec<_> = frame(&a)
             .into_iter()
             .filter_map(|d| match d {
@@ -410,10 +422,8 @@ fn labels_start_and_values_end_thirty_two_pixels_in() {
         let [x, ..] = placed(&out, 100 + row.index()).expect("a label was not drawn");
         assert_eq!(x + MENU_PAD as f32, QUICK_EDGE, "{row:?}'s label");
     }
-    let [x, _, w, _] = placed(&out, value(QuickValue::On, false)).expect("rumble's value");
+    let [x, _, w, _] = placed(&out, value(QuickValue::L2R2, false)).expect("brightness's value");
     assert_eq!(x + w - MENU_PAD as f32, right, "an unselected value");
-    let [x, _, w, _] = placed(&out, 301).expect("the right arrow");
-    assert_eq!(x + w, right, "the arrow around the selected value");
 }
 
 /// Ruling S6: opened from the menu the clock offers B BACK beside its own key. At first boot it

@@ -11,14 +11,17 @@ use crate::text;
 pub enum QuickRow {
     DateTime,
     About,
+    Brightness,
 }
 
 impl QuickRow {
     /// ezGBA keeps only the two rows that open something. Rumble and colour correction stay at
     /// their defaults, and fast forward cannot start with R2 as brightness.
-    pub const ALL: [QuickRow; 2] = [
+    /// Brightness is last and only says which buttons do it; the bar never lands on it.
+    pub const ALL: [QuickRow; 3] = [
         QuickRow::DateTime,
         QuickRow::About,
+        QuickRow::Brightness,
     ];
 
     /// Position in `ALL`, which is the order the labels are uploaded in and drawn in.
@@ -30,6 +33,7 @@ impl QuickRow {
         match self {
             QuickRow::DateTime => "Date & Time",
             QuickRow::About => "About",
+            QuickRow::Brightness => "Brightness",
         }
     }
 
@@ -44,7 +48,12 @@ impl QuickRow {
     }
 
     pub fn down(self) -> QuickRow {
-        QuickRow::ALL[(self.index() + 1).min(QuickRow::ALL.len() - 1)]
+        let next = QuickRow::ALL[(self.index() + 1).min(QuickRow::ALL.len() - 1)];
+        if next == QuickRow::Brightness {
+            self
+        } else {
+            next
+        }
     }
 }
 
@@ -58,16 +67,18 @@ pub enum QuickValue {
     Speed6,
     On,
     Off,
+    L2R2,
 }
 
 impl QuickValue {
-    pub const ALL: [QuickValue; 6] = [
+    pub const ALL: [QuickValue; 7] = [
         QuickValue::Speed2,
         QuickValue::Speed3,
         QuickValue::Speed4,
         QuickValue::Speed6,
         QuickValue::On,
         QuickValue::Off,
+        QuickValue::L2R2,
     ];
 
     /// Position in `ALL`, which is the order the faces are uploaded in.
@@ -83,6 +94,7 @@ impl QuickValue {
             QuickValue::Speed6 => "6×",
             QuickValue::On => "On",
             QuickValue::Off => "Off",
+            QuickValue::L2R2 => "L2 / R2",
         }
     }
 

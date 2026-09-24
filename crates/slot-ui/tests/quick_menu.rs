@@ -92,7 +92,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
     let labels = QuickRow::ALL.map(QuickRow::label);
     assert_eq!(
         labels,
-        ["Date & Time", "About"]
+        ["Date & Time", "About", "Brightness"]
     );
     let opens: Vec<QuickRow> = QuickRow::ALL.into_iter().filter(|r| r.opens()).collect();
     assert_eq!(opens, [QuickRow::DateTime, QuickRow::About]);
@@ -102,7 +102,7 @@ fn the_rows_run_in_the_order_the_user_chose() {
 fn the_values_read_as_the_menu_prints_them() {
     assert_eq!(
         QuickValue::ALL.map(QuickValue::text),
-        ["2×", "3×", "4×", "6×", "On", "Off"]
+        ["2×", "3×", "4×", "6×", "On", "Off", "L2 / R2"]
     );
     assert_eq!(QuickValue::flag(true), QuickValue::On);
     assert_eq!(QuickValue::flag(false), QuickValue::Off);
