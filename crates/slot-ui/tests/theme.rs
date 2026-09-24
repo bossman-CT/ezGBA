@@ -12,6 +12,7 @@ fn the_card_s_palette_is_what_reaches_the_screen() {
         opening: [0x77, 0x88, 0x99],
         edge: [0xaa, 0xbb, 0xcc],
         scrim: [0x00, 0x00, 0x00],
+        ..Theme::default()
     };
     set_theme(t);
     let hex = |c: [f32; 4]| {

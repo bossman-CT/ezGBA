@@ -72,7 +72,7 @@ pub use shell::{
 };
 pub use silhouette::{gb_silhouette, silhouette, GbShell};
 pub use slot_chrome::{
-    draw_empty_slot, ease, edge, housing, opening, recess, scrim, set_theme, SlotChrome,
+    draw_empty_slot, ease, edge, housing, opening, recess, scrim, set_theme, theme, SlotChrome,
     ALERT_PX, LIP_H, MOUTH_H, MOUTH_W,
 };
 pub use sticker::{

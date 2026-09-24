@@ -52,6 +52,9 @@ pub fn clock_label(stamp: &str) -> String {
 pub fn hhmm(secs: i64) -> String {
     let rem = secs.rem_euclid(DAY);
     let (h, m) = (rem / 3600, rem / 60 % 60);
+    if crate::slot_chrome::theme().clock_24 {
+        return format!("{h:02}:{m:02}");
+    }
     let h12 = if h % 12 == 0 { 12 } else { h % 12 };
     format!("{h12}:{m:02} {}", if h < 12 { "AM" } else { "PM" })
 }

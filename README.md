@@ -23,7 +23,7 @@ Made for kids, and for grown-ups who just want a simple GBA.
 |---|---|
 | **D-pad** | Pick a game |
 | **A** | Play it |
-| **MENU** | Save and go back to your games |
+| **MENU** | In a game: save and go back to your games. On the shelf: settings. |
 | **L2 / R2** | Screen darker / brighter |
 | **Close the lid** | Save and sleep. Open it to keep playing. |
 
@@ -41,6 +41,19 @@ ezGBA is built on [slot.](https://github.com/BrandonKowalski/slot). Here's what 
   find games by picture.
 - **Your own colors.** Give each console its own background color in `System/theme.txt`.
 - **12-hour clock.** Shows `4:39 PM`, not `16:39`.
+- **A shorter settings menu.** Just Colour Correction, Rumble, Date & Time, and About.
+
+## Settings
+
+Tap **MENU** on the shelf to change the time, colors, rumble, or see About.
+
+For a few more options, edit `System/theme.txt` on the SD card:
+
+| Line | What it does |
+|---|---|
+| `clock 24` | Show the time as `16:39` |
+| `menu off` | Hide the settings menu, so little hands can't change anything |
+| `scrim #F7E7CE` | Background color behind the shelf |
 
 Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot.'s
 work, unchanged.

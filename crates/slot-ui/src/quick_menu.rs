@@ -9,8 +9,6 @@ use crate::text;
 /// The menu's rows, top to bottom in the order the user chose.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum QuickRow {
-    FastForward,
-    FastForwardSound,
     ColourCorrection,
     Rumble,
     DateTime,
@@ -18,23 +16,8 @@ pub enum QuickRow {
 }
 
 impl QuickRow {
-    /// Colour Correction sits third, and the two rows either side of it are why.
-    ///
-    /// It cannot go first: `App::open_quick_menu` puts the bar on `ALL[0]` every time, so the
-    /// top row is the one an arrow lands on the instant the menu opens, and moving that from
-    /// Fast Forward to a setting that changes what every game looks like is a change nobody
-    /// asked for. It cannot go below Date & Time either: those two are the rows A opens, the
-    /// legend reads OPEN rather than CHANGE on them, and keeping them together is what makes
-    /// that legend flip exactly once as the bar travels down.
-    ///
-    /// That leaves above or below Rumble, and above is the better of the two. Fast Forward and
-    /// its Sound are a pair — the second reads as a qualifier of the first — so nothing may come
-    /// between them, and what follows the pair is the settings that stand alone. Of those,
-    /// colour correction is in effect every second a game is on screen while rumble only matters
-    /// when a cart asks for the motor, so the unconditional one comes first.
-    pub const ALL: [QuickRow; 6] = [
-        QuickRow::FastForward,
-        QuickRow::FastForwardSound,
+    /// Fast Forward and its Sound are gone: R2 is brightness in ezGBA, so nothing can start it.
+    pub const ALL: [QuickRow; 4] = [
         QuickRow::ColourCorrection,
         QuickRow::Rumble,
         QuickRow::DateTime,
@@ -48,8 +31,6 @@ impl QuickRow {
 
     pub fn label(self) -> &'static str {
         match self {
-            QuickRow::FastForward => "Fast Forward",
-            QuickRow::FastForwardSound => "Fast Forward Sound",
             QuickRow::ColourCorrection => "Colour Correction",
             QuickRow::Rumble => "Rumble",
             QuickRow::DateTime => "Date & Time",

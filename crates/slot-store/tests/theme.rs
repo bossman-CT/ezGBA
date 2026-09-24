@@ -54,3 +54,19 @@ fn a_missing_file_is_the_default_theme() {
     let d = tempfile::tempdir().unwrap();
     assert_eq!(Theme::read(d.path()), Theme::default());
 }
+
+#[test]
+fn clock_24_and_menu_off_are_read_and_default_to_12_hour_with_the_menu() {
+    let d = Theme::default();
+    assert!(!d.clock_24);
+    assert!(d.menu);
+    let t = Theme::parse("clock 24
+menu off
+scrim #F7E7CE
+");
+    assert!(t.clock_24);
+    assert!(!t.menu);
+    assert_eq!(t.scrim, [0xf7, 0xe7, 0xce]);
+    assert!(!Theme::parse("clock 25").clock_24);
+    assert!(Theme::parse("menu maybe").menu);
+}

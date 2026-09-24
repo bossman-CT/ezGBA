@@ -57,13 +57,13 @@ fn open_at(a: &mut App, row: QuickRow) {
 fn menu_opens_the_quick_menu_with_its_top_row_selected_every_time() {
     let (_d, mut a, _) = on_carousel();
     a.apply(Action::QuickMenu);
-    assert_eq!(a.quick_menu(), Some(QuickRow::FastForward));
+    assert_eq!(a.quick_menu(), Some(QuickRow::ColourCorrection));
     press(&mut a, Btn::Down);
     a.apply(Action::QuickMenu);
     a.apply(Action::QuickMenu);
     assert_eq!(
         a.quick_menu(),
-        Some(QuickRow::FastForward),
+        Some(QuickRow::ColourCorrection),
         "the menu opened where it was last left"
     );
 }
@@ -111,12 +111,10 @@ fn up_and_down_move_the_bar_and_stop_at_the_ends() {
     press(&mut a, Btn::Up);
     assert_eq!(
         a.quick_menu(),
-        Some(QuickRow::FastForward),
+        Some(QuickRow::ColourCorrection),
         "wrapped off the top"
     );
     for want in [
-        QuickRow::FastForwardSound,
-        QuickRow::ColourCorrection,
         QuickRow::Rumble,
         QuickRow::DateTime,
         QuickRow::About,
@@ -127,61 +125,27 @@ fn up_and_down_move_the_bar_and_stop_at_the_ends() {
     }
 }
 
-/// Left is slower and Right is faster, stopping at each end, and every step is on the card at
-/// once: there is no save.
 #[test]
-fn fast_forward_steps_through_its_speeds_and_saves_each_one() {
+fn rumble_flips_on_either_arrow_and_saves() {
     let (d, mut a, _) = on_carousel();
-    open_at(&mut a, QuickRow::FastForward);
-    for (btn, want) in [
-        // The row opens on the default, 6x, so Left walks down through the slow end first.
-        (Btn::Left, 4),
-        (Btn::Left, 3),
-        (Btn::Left, 2),
-        (Btn::Left, 2),
-        (Btn::Right, 3),
-        (Btn::Right, 4),
-        // The row steps over 5: past four a single frame is not a speed anyone can see.
-        (Btn::Right, 6),
-        // Six is the top of the row as well as its default, so Right stops there.
-        (Btn::Right, 6),
-        (Btn::Left, 4),
-    ] {
-        press(&mut a, btn);
-        assert_eq!(a.ff_speed(), want, "{btn:?}");
-        assert_eq!(read_slot_state(d.path()).ff_speed, want, "not on the card");
-        assert_eq!(
-            a.quick_value(QuickRow::FastForward),
-            QuickValue::speed(want)
-        );
-    }
-}
-
-#[test]
-fn rumble_and_fast_forward_sound_flip_on_either_arrow_and_save() {
-    let (d, mut a, _) = on_carousel();
-    let card = |d: &TempDir| {
-        let s = read_slot_state(d.path());
-        (s.ff_sound, s.rumble)
-    };
-    open_at(&mut a, QuickRow::FastForwardSound);
-    press(&mut a, Btn::Left);
-    assert_eq!(card(&d), (true, true));
-    assert_eq!(
-        a.quick_value(QuickRow::FastForwardSound),
-        Some(QuickValue::On)
-    );
+    open_at(&mut a, QuickRow::Rumble);
     press(&mut a, Btn::Right);
-    assert_eq!(card(&d), (false, true));
-    // Two rows down: Colour Correction now sits between the Fast Forward pair and Rumble.
-    press(&mut a, Btn::Down);
-    press(&mut a, Btn::Down);
-    press(&mut a, Btn::Right);
-    assert_eq!(card(&d), (false, false));
+    assert!(!read_slot_state(d.path()).rumble);
     assert!(!a.rumble_enabled());
     assert_eq!(a.quick_value(QuickRow::Rumble), Some(QuickValue::Off));
     press(&mut a, Btn::Left);
-    assert_eq!(card(&d), (false, true));
+    assert!(read_slot_state(d.path()).rumble);
+}
+
+/// MENU's press arrives as an eject once it is held past the tap threshold, which every real
+/// press is. On the shelf that opens the menu, and a second press closes it.
+#[test]
+fn a_menu_press_on_the_shelf_opens_and_closes_the_menu() {
+    let (_d, mut a, _) = on_carousel();
+    a.apply(Action::Eject);
+    assert_eq!(a.quick_menu(), Some(QuickRow::ALL[0]));
+    a.apply(Action::Eject);
+    assert!(matches!(a.phase(), Phase::Shelf), "{:?}", a.phase());
 }
 
 /// Colour Correction is a two-value row like the other flags, so either arrow is the other
@@ -362,7 +326,7 @@ fn brightness_and_volume_still_answer_over_the_quick_menu() {
         .map(|i| TexId::from_raw(700 + i))
         .collect();
     a.set_icon_faces(icons.clone());
-    open_at(&mut a, QuickRow::FastForward);
+    open_at(&mut a, QuickRow::ColourCorrection);
     let before = read_slot_state(d.path());
     a.apply(Action::BrightnessUp);
     a.apply(Action::VolumeDown);
@@ -373,7 +337,7 @@ fn brightness_and_volume_still_answer_over_the_quick_menu() {
     );
     assert_eq!(
         a.quick_menu(),
-        Some(QuickRow::FastForward),
+        Some(QuickRow::ColourCorrection),
         "a level moved the menu"
     );
     let out = frame(&a);

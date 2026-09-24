@@ -7,7 +7,7 @@ use slot_power::{Battery, Charge, LedState, LidPolicy, Power};
 use slot_retro::LinkChannel;
 use slot_store::{
     format_stamp, read_slot_state, scan, write_slot_state, Cart, Core, Platform, SlotState,
-    StateEntry, StateRing, Theme, BLUE_LIGHT_MAX, BRIGHTNESS_MAX, FF_SPEEDS, RING_MAX, VOLUME_MAX,
+    StateEntry, StateRing, Theme, BLUE_LIGHT_MAX, BRIGHTNESS_MAX, RING_MAX, VOLUME_MAX,
 };
 use slot_ui::{
     board_from, board_zoom, draw_backdrop, draw_empty_slot, draw_footer, draw_sticker, ease, grown,
@@ -931,8 +931,6 @@ impl App {
     /// Time's value is the clock, which the binary rasterises, and About has none.
     pub fn quick_value(&self, row: QuickRow) -> Option<QuickValue> {
         match row {
-            QuickRow::FastForward => QuickValue::speed(self.state.ff_speed),
-            QuickRow::FastForwardSound => Some(QuickValue::flag(self.state.ff_sound)),
             QuickRow::ColourCorrection => Some(QuickValue::flag(self.state.colour_correction)),
             QuickRow::Rumble => Some(QuickValue::flag(self.state.rumble)),
             QuickRow::DateTime | QuickRow::About => None,
@@ -1667,7 +1665,8 @@ impl App {
                 Action::ShelfRight | Action::GbaDown(Btn::Right) => {
                     self.shelf_mut().hold_right(now)
                 }
-                Action::QuickMenu => self.open_quick_menu(),
+                // MENU's press is an eject everywhere, and on the shelf there is nothing to eject.
+                Action::QuickMenu | Action::Eject => self.open_quick_menu(),
                 // A is two actions and the press cannot tell them apart yet, so the cart
                 // goes in on the release. The hold has already taken it if it got there
                 // first, and then the release is not a second press.
@@ -1725,7 +1724,12 @@ impl App {
             },
             // Back to the menu it was opened from, on the row that opened it. MENU as well as B,
             // as it always has been, so the button that brought the user here gets them back.
-            Phase::About if action == Action::GbaDown(Btn::B) || action == Action::QuickMenu => {
+            Phase::About
+                if matches!(
+                    action,
+                    Action::GbaDown(Btn::B) | Action::QuickMenu | Action::Eject
+                ) =>
+            {
                 self.phase = Phase::QuickMenu {
                     row: QuickRow::About,
                 }
@@ -1737,6 +1741,9 @@ impl App {
 
     /// MENU on the carousel. On the top row every time, however the menu was last left.
     fn open_quick_menu(&mut self) {
+        if !slot_ui::theme().menu {
+            return;
+        }
         self.phase = Phase::QuickMenu {
             row: QuickRow::ALL[0],
         };
@@ -1751,7 +1758,7 @@ impl App {
             Action::GbaDown(Btn::Left) => return self.change_setting(row, false),
             Action::GbaDown(Btn::Right) => return self.change_setting(row, true),
             Action::GbaDown(Btn::A) => return self.open_quick_row(row),
-            Action::GbaDown(Btn::B) | Action::QuickMenu => {
+            Action::GbaDown(Btn::B) | Action::QuickMenu | Action::Eject => {
                 self.phase = Phase::Shelf;
                 return;
             }
@@ -1769,10 +1776,7 @@ impl App {
                 self.phase = clock_screen(self.utc_secs(), self.state.utc_offset_min, true);
             }
             QuickRow::About => self.phase = Phase::About,
-            QuickRow::FastForward
-            | QuickRow::FastForwardSound
-            | QuickRow::ColourCorrection
-            | QuickRow::Rumble => {}
+            QuickRow::ColourCorrection | QuickRow::Rumble => {}
         }
     }
 
@@ -1782,15 +1786,7 @@ impl App {
     fn change_setting(&mut self, row: QuickRow, right: bool) {
         let s = &mut self.state;
         match row {
-            QuickRow::FastForward => {
-                let to = ff_next(s.ff_speed, right);
-                if to == s.ff_speed {
-                    return;
-                }
-                s.ff_speed = to;
-            }
             // Two values each, so either arrow is the other one.
-            QuickRow::FastForwardSound => s.ff_sound = !s.ff_sound,
             QuickRow::ColourCorrection => s.colour_correction = !s.colour_correction,
             QuickRow::Rumble => s.rumble = !s.rumble,
             QuickRow::DateTime | QuickRow::About => return,
@@ -4187,15 +4183,6 @@ fn trusted_write(
 
 fn up(level: u8, step: u8, max: u8) -> u8 {
     level.saturating_add(step).min(max)
-}
-
-/// One step along the Fast Forward row, whose values are `FF_SPEEDS` in that order. It does not
-/// wrap, as no menu here does, so a press against either end answers with the value already
-/// showing and `change_setting` writes nothing.
-fn ff_next(from: u8, right: bool) -> u8 {
-    let at = FF_SPEEDS.iter().position(|&v| v == from).unwrap_or(0);
-    let to = if right { at + 1 } else { at.saturating_sub(1) };
-    FF_SPEEDS[to.min(FF_SPEEDS.len() - 1)]
 }
 
 /// The clock screen, opened on `utc` with `offset_min` already chosen. The picker shows only the

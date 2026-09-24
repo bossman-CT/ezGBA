@@ -25,6 +25,10 @@ pub struct Theme {
     /// The tint behind the shelf, under the wallpaper's fixed opacity. Black by default,
     /// matching what every card had before this existed.
     pub scrim: [u8; 3],
+    /// `clock 24` shows the time as `16:39`; anything else, or no line, is `4:39 PM`.
+    pub clock_24: bool,
+    /// `menu off` keeps MENU on the shelf from opening the settings menu.
+    pub menu: bool,
 }
 
 impl Default for Theme {
@@ -35,6 +39,8 @@ impl Default for Theme {
             opening: [0x05, 0x05, 0x08],
             edge: [0x4d, 0x4d, 0x57],
             scrim: [0x00, 0x00, 0x00],
+            clock_24: false,
+            menu: true,
         }
     }
 }
@@ -64,10 +70,18 @@ impl Theme {
             if parts.next().is_some() {
                 continue;
             }
+            let name = name.to_ascii_lowercase();
+            match (name.as_str(), value.to_ascii_lowercase().as_str()) {
+                ("clock", "24") => theme.clock_24 = true,
+                ("clock", "12") => theme.clock_24 = false,
+                ("menu", "off") => theme.menu = false,
+                ("menu", "on") => theme.menu = true,
+                _ => {}
+            }
             let Some(rgb) = hex(value) else {
                 continue;
             };
-            match name.to_ascii_lowercase().as_str() {
+            match name.as_str() {
                 "housing" => theme.housing = rgb,
                 "recess" => theme.recess = rgb,
                 "opening" => theme.opening = rgb,
