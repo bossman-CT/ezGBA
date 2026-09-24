@@ -43,6 +43,9 @@ ezGBA is built on [slot.](https://github.com/BrandonKowalski/slot). Here's what 
 - **12-hour clock.** Shows `4:39 PM`, not `16:39`.
 - **A shorter settings menu.** Just Colour Correction, Rumble, Date & Time, and About.
 
+Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot.'s
+work, unchanged.
+
 ## Settings
 
 Tap **MENU** on the shelf to change the time, colors, rumble, or see About.
@@ -54,9 +57,6 @@ For a few more options, edit `System/theme.txt` on the SD card:
 | `clock 24` | Show the time as `16:39` |
 | `menu off` | Hide the settings menu, so little hands can't change anything |
 | `scrim #F7E7CE` | Background color behind the shelf |
-
-Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot.'s
-work, unchanged.
 
 ## Setup
 
