@@ -273,6 +273,15 @@ impl QuickMenu<'_> {
             h: QUICK_PITCH - 2.0 * BAR_INSET,
             colour: edge(),
         });
+        // Sets the Brightness note apart from the rows that do something.
+        let [r, g, b] = DIM_INK;
+        out.push(Draw::Rect {
+            x: QUICK_EDGE,
+            y: row_top(QuickRow::Brightness) - 1.0,
+            w: OUT_W as f32 - 2.0 * QUICK_EDGE,
+            h: 2.0,
+            colour: [r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0, 0.5],
+        });
         let Some(faces) = self.faces else {
             return;
         };
