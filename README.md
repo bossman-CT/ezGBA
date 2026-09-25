@@ -1,6 +1,6 @@
 # ezGBA
 
-**No hotkeys. No combos. No menus to get lost in. No fast forward / Rewind. Simple, simple, simple.**
+**No hotkeys. No combos. No menus to get lost in. Simple, simple, simple.**
 
 ezGBA turns an Anbernic RG SP into a Game Boy Advance that anyone can pick up and play.
 Made for kids, and for grown-ups who just want a simple GBA.
