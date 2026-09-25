@@ -25,7 +25,7 @@ Made for kids, and for grown-ups who just want a simple GBA.
 | **A** | Play it |
 | **MENU** | In a game: save and go back to your games. On the shelf: settings. |
 | **L2 / R2** | Screen darker / brighter |
-| **Close the lid** | Saves and sleeps. Open it within 3 minutes to keep playing. After that it turns itself off, and the next time you turn it on, your game picks up right where you left off. |
+| **Close the lid** | Saves and sleeps. Open it within 3 minutes to keep playing. After that it turns itself off to save battery, and the next time you turn it on, your game picks up right where you left off. |
 
 That's everything. Every button does one thing, on its own. No holding, no combos.
 
