@@ -31,19 +31,19 @@ That's everything. Every button does one thing, on its own. No holding, no combo
 
 ## What's different from slot.
 
-ezGBA is built on [slot.](https://github.com/BrandonKowalski/slot). Here's what changed:
+ezGBA is built on [slot](https://github.com/BrandonKowalski/slot). Here's what changed:
 
 - **No hotkeys.** No button combos to learn or hit by accident.
-- **L2/R2 control brightness.** In slot. they rewind and fast-forward the game, which is
+- **L2/R2 control brightness.** In slot they rewind and fast-forward the game, which is
   easy to press by accident mid-game.
-- **One tap of MENU saves and ejects.** slot. needs MENU held for about a second.
+- **One tap of MENU saves and ejects.** slot needs MENU held for about a second.
 - **The game's box art fills the screen.** Scroll to a game and see its cover, so you can
   find games by picture.
 - **Your own colors.** Give each console its own background color in `System/theme.txt`.
 - **12-hour clock.** Shows `4:39 PM`, not `16:39`.
 - **A tiny settings menu.** Just Date & Time and About. Nothing in it can mess anything up.
 
-Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot.'s
+Everything else, like lid-close saving, wireless trading, and the cartridge shelf, is slot's
 work, unchanged.
 
 ## Settings
@@ -60,7 +60,7 @@ For a couple more options, edit `System/theme.txt` on the SD card:
 
 ## Setup
 
-1. Set up your RG SP using [slot.'s install guide](https://slot.kowalski.io).
+1. Set up your RG SP using [slot's install guide](https://slot.kowalski.io).
 2. Download the latest ezGBA from [releases](../../releases).
 3. Unzip it and copy it onto the second SD card, just like slot.
 4. **Add box art (optional).** Box art isn't included, since it belongs to the publishers.
@@ -70,7 +70,7 @@ For a couple more options, edit `System/theme.txt` on the SD card:
 
 ## AI disclosure
 
-Built with Claude's help, on top of slot., which was also built with Claude's help. Every
+Built with Claude's help, on top of slot, which was also built with Claude's help. Every
 change was tested on real hardware.
 
 ## Credit
